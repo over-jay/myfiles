@@ -1,0 +1,34 @@
+
+DATA  grades2;
+  set grades2 ( drop =  Class   ) ;
+RUN ;
+
+
+
+ DATA Class_yng ;
+  set sashelp.Class ;
+  if Age < 15 then OUTPUT ;
+RUN ;
+
+
+
+ DATA Class ;
+  set sashelp.Class  ;
+RUN ;
+
+
+
+
+
+DATA PRELIM.Class;
+  set Class;
+       un = 1;
+
+        n = _N_;
+
+        x = "DOG";
+
+        Nom = Name;
+
+
+RUN ;

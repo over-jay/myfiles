@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Dauphine Statistiques et études économiques sous SAS - Application 2</title>
+
+		<meta name="description" content="Cours dauphine using HTML">
+		<meta name="author" content="Pierre-Michel Becquet">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/beige.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				
+				<!-- Slide de titre -->
+
+				<section>
+					<h1>Application 2</h1>
+					<h3>Utilisation des étapes DATA</h3>
+				</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 1</h2>
+					<p>Créer une librairie nommée app2</p>
+					<p>Stocker la table CARS contenue dans l'onglet CARS du fichier Excel transmis</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleu">Libname</span> app2 <span class="violet">'C:\...\SAS FILES'</span>;</p>
+							<p><span class="bleuG">PROC IMPORT</span></p>
+							<p>&nbsp OUT = app2.CARS</p>
+							<p>&nbsp DATAFILE = <span class="violet">'C:\...\Cars et report.xls'</span></p>
+							<p>&nbsp DBMS = XLS REPLACE;</p>
+							<p>SHEET = <span class="violet">'CARS'</span>;</p>
+							<p>GETNAMES = YES;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 2</h2>
+					<p>Créer 2 tables </p>
+					<ul>
+					<li>La première nommée CARCAR comprendra les variables alphanumériques de la table CARS</li>
+					<li>La seconde nommée CARNUM comprendra les variables numériques de la table CARS</li>
+					</ul>
+					<p>&nbsp</p>
+					<p>Créer une table qui contient les modèles dont le prix de vente conseillé (MSRP) est supérieur à 50 000 $</p>					
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Création de CARCAR dans la librairie WORK*/</span> </p>
+							<p><span class="bleuG">DATA</span> CARCAR;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS(<span class="bleu">KEEP</span>=Make Model Type Origin DriveTrain);</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p>&nbsp</p>
+							<p><span class="bleuForm">/*Création de CARNUM dans la librairie WORK*/</span> </p>
+							<p><span class="bleuG">DATA</span> CARNUM;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS(<span class="bleu">DROP</span>=Make Model Type Origin DriveTrain);</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p>&nbsp</p>
+							<p><span class="bleuForm">/*Création de sup_50 dans la librairie WORK qui contiendra les modèles dont le prix de vente conseillé est supérieur à 50 000$*/</span> </p>
+							<p><span class="bleuG">DATA</span> sup_50;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS(<span class="bleu">WHERE</span>=(MSRP > <span class="bleuForm">50000</span>));</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h3>Utilisation des étapes DATA - Partie 2</h3>
+					<p>&nbsp</p>
+					<p>Créer 3 tables qui contiennent les modèles européens, américains et asiatiques</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Création de 3 tables dans la librairie app2 qui contiendront les modèles selon les 3 origines géographiques*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Asia app2.Europe app2.US;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS;</p>
+							<p>&nbsp <span class="bleu">if</span> Origin = <span class="violet">'Asia'</span> <span class="bleu">then output</span> app2.Asia;</p>
+							<p>&nbsp <span class="bleu">if</span> Origin = <span class="violet">'Europe'</span> <span class="bleu">then output</span> app2.Europe;</p>
+							<p>&nbsp <span class="bleu">if</span> Origin = <span class="violet">'USA'</span> <span class="bleu">then output</span> app2.US;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 3</h2>
+					<p>Modifier la variable DriveTrain afin qu'elle corresponde aux exigences de sa traduction </p>
+					<ul>
+					<li>Ses modalités deviendront Avant, Arrière et Toutes</li>
+					<li>Son label doit être modifié afin de pouvoir lire dans la table "Transmission de la voiture" en lieu et place de "DriveTrain"</li>
+					</ul>
+				</section>
+					<section>
+						<h3>Solution</h3>
+						<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Création d'une table CARS_TRANS dans la librairie app2 qui contiendra les informations traduites de la variable DriveTrain*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Cars_trans;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS;</p>
+							<p>&nbsp <span class="bleu">Format</span> trans <span class="bleuForm">$25.</span>;</p>
+							<p>&nbsp <span class="bleu">Label</span> trans = <span class="violet">'Transmission de la voiture'</span>;</p>
+							<p>&nbsp <span class="bleu">if</span> DriveTrain = <span class="violet">'Rear'</span> <span class="bleu">then </span> trans = <span class="violet">'Arrière'</span>;</p>
+							<p>&nbsp <span class="bleu">if</span> DriveTrain = <span class="violet">'Front'</span> <span class="bleu">then </span> trans = <span class="violet">'Avant'</span>;</p>
+							<p>&nbsp <span class="bleu">if</span> DriveTrain = <span class="violet">'ALL'</span> <span class="bleu">then </span> trans = <span class="violet">'Toutes'</span>;</p>
+							<p>&nbsp <span class="bleu">Drop</span> DriveTrain;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+					</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 3</h2>
+					<p>Convertissez la variable MPG_City en variable alphanumérique</p>
+					<p>Puis tenter de reconvertir cette nouvelle variable en variable numérique</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Création de city_code et city_num*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Cars_trans;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Cars_trans;</p>
+							<p>&nbsp <span class="bleu">Format</span> City_code <span class="bleuForm">$2.</span>;</p>
+							<p>&nbsp City_code = put(MPG_City,<span class="bleuForm">$2.</span>);</p>
+							<p>&nbsp City_num = input(City_code,<span class="bleuForm">8.</span>);</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 4</h2>
+					<p>Importer puis concaténéer les tables contenues dans les onglets report_fr, report_de et report_uk du fichier excel transmis</p>
+					<p>Identifier la provenance géographique des table en ajoutant une variable Country qui aura 3 modalités :</p>
+					<ul>
+					<li>FR</li>
+					<li>DE</li>
+					<li>UK</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Import des 3 reports FR, DE et UK*/</span> </p>
+							<p><span class="bleuG">PROC IMPORT</span></p>
+							<p>&nbsp OUT = app2.Report_FR</p>
+							<p>&nbsp DATAFILE = <span class="violet">'C:\...\Cars et report.xls'</span></p>
+							<p>&nbsp DBMS = XLS REPLACE;</p>
+							<p>SHEET = <span class="violet">'Report_FR inc '</span>;</p>
+							<p>GETNAMES = YES;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p><span class="bleuG">PROC IMPORT</span></p>
+							<p>&nbsp OUT = app2.Report_DE</p>
+							<p>&nbsp DATAFILE = <span class="violet">'C:\...\Cars et report.xls'</span></p>
+							<p>&nbsp DBMS = XLS REPLACE;</p>
+							<p>SHEET = <span class="violet">'Report_DE inc'</span>;</p>
+							<p>GETNAMES = YES;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							
+						</small>
+					</div>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuG">PROC IMPORT</span></p>
+							<p>&nbsp OUT = app2.Report_UK</p>
+							<p>&nbsp DATAFILE = <span class="violet">'C:\...\Cars et report.xls'</span></p>
+							<p>&nbsp DBMS = XLS REPLACE;</p>
+							<p>SHEET = <span class="violet">'Report_UK inc'</span>;</p>
+							<p>GETNAMES = YES;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p><span class="bleuForm">/*Création de report_mond qui est la concaténation des 3 reporting avec une nouvelle Variable Country qui identifiera de quel bureau provient l'information*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.report_mond;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Report_FR (in=fr) app2.Report_DE (in=de) app2.Report_UK;</p>
+							<p>&nbsp <span class="bleu">if</span> fr = <span class="bleuForm">1</span> <span class="bleu">then </span> Country = <span class="violet">'FR'</span>;</p>
+							<p>&nbsp <span class="bleu">else if</span> de = <span class="bleuForm">1</span> <span class="bleu">then </span> Country = <span class="violet">'DE'</span>;</p>
+							<p>&nbsp <span class="bleu">else </span> Country = <span class="violet">'UK'</span>;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 5</h2>
+					<p>Nous souhaitons maintenant conserver l'unicité des individus</p>
+					<p>Fusionner les rapports avec la table qui liste tous les modèles afin d'ajouter les résultats des ventes et des stocks des concessionnaires français, allemands et anglais dans 6 colonnes distinctes</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Modification et tri du rapport français*/</span> </p>
+							<p><span class="bleuG">DATA</span> report_fr;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Report_FR;</p>
+							<p>&nbsp <span class="bleu">rename</span></p>
+							<p>&nbsp&nbsp Constructeur = make</p>
+							<p>&nbsp&nbsp Modele = Model</p>
+							<p>&nbsp&nbsp nb_vente = sales_fr</p>
+							<p>&nbsp&nbsp Stock = stock_fr</p>
+							<p>;</p>
+							<p>&nbsp <span class="bleu">label</span></p>
+							<p>&nbsp&nbsp Constructeur = <span class="violet">'Make FR'</span></p>
+							<p>&nbsp&nbsp Modele = <span class="violet">'Model FR'</span></p>
+							<p>&nbsp&nbsp nb_vente = <span class="violet">'Sales FR'</span></p>
+							<p>&nbsp&nbsp Stock = <span class="violet">'Stock FR'</span></p>
+							<p>;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p><span class="bleuForm">/*Tri de la table en vue de la fusion*/</span> </p>
+							<p><span class="bleuG">PROC SORT;</span><span class="bleu">by</span> make model;<span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Modification et tri du rapport allemand*/</span> </p>
+							<p><span class="bleuG">DATA</span> report_de;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Report_DE;</p>
+							<p>&nbsp <span class="bleu">rename</span></p>
+							<p>&nbsp&nbsp Baumeister = make</p>
+							<p>&nbsp&nbsp Modell = Model</p>
+							<p>&nbsp&nbsp Verkauf = sales_de</p>
+							<p>&nbsp&nbsp Stock = stock_de</p>
+							<p>;</p>
+							<p>&nbsp <span class="bleu">label</span></p>
+							<p>&nbsp&nbsp Baumeister = <span class="violet">'Make DE'</span></p>
+							<p>&nbsp&nbsp Modell = <span class="violet">'Model DE'</span></p>
+							<p>&nbsp&nbsp Verkauf = <span class="violet">'Sales DE'</span></p>
+							<p>&nbsp&nbsp Stock = <span class="violet">'Stock DE'</span></p>
+							<p>;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p><span class="bleuForm">/*Tri de la table en vue de la fusion*/</span> </p>
+							<p><span class="bleuG">PROC SORT;</span><span class="bleu">by</span> make model;<span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Modification et tri du rapport anglais*/</span> </p>
+							<p><span class="bleuG">DATA</span> report_UK;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Report_UK;</p>
+							<p>&nbsp <span class="bleu">rename</span></p>
+							<p>&nbsp&nbsp sales = sales_uk</p>
+							<p>&nbsp&nbsp Stock = stock_uk</p>
+							<p>;</p>
+							<p>&nbsp <span class="bleu">label</span></p>
+							<p>&nbsp&nbsp Make = <span class="violet">'Make UK'</span></p>
+							<p>&nbsp&nbsp Modell = <span class="violet">'Model UK'</span></p>
+							<p>&nbsp&nbsp Verkauf = <span class="violet">'Sales UK'</span></p>
+							<p>&nbsp&nbsp Stock = <span class="violet">'Stock UK'</span></p>
+							<p>;</p>
+							<p><span class="bleuG">RUN;</span></p>
+							<p><span class="bleuForm">/*Tri de la table en vue de la fusion*/</span> </p>
+							<p><span class="bleuG">PROC SORT;</span><span class="bleu">by</span> make model;<span class="bleuG">RUN;</span></p>
+							<p><span class="bleuForm">/*Tri de la MASTER table en vue de la fusion*/</span> </p>
+							<p><span class="bleuG">PROC SORT </span><span class="bleu">data</span>=app2.Cars;<span class="bleu">by</span> make model;<span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*FUSION des rapports avec la master table CARS*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Report_Monde_Final;</p>
+							<p>&nbsp <span class="bleu">MERGE</span> app2.CARS report_FR report_DE report_UK;</p>
+							<p>&nbsp <span class="bleu">by</span> make model;</p>
+							<p><span class="bleuG">RUN;</span></p></small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 6</h2>
+					<p>Créer 2 nouvelles variables</p>
+					<ul>
+					<li>sales_euro_cont qui sera la somme des ventes françaises et allemandes</li>
+					<li>sales_world qui sera la somme des ventes dans les trois pays</li>
+					</ul>
+					<p>ATTENTION</p>
+					<p>Identifier par 'Données incomplètes' les modèles qui n'existe pas dans tous les pays</p>
+					<p>Qu'êtes-vous obligés de faire pour faire apparaitre cette modalité dans les variables?</p>
+				</section>
+				<section>
+					<h3>Remarques préliminaires</h3>
+					<p>Sous SAS, les variables ne peuvent être numériques et alphanumériques</p>
+					<p>Il faudra penser à mettre la somme en format alphanumérique afin que la modalité 'Données incomplètes' puissent être implémentée dans les variables sales_euro_cont et sales_world</p>
+					<p>Dans une conditionnalité comme if then else, les instructions sont uniques après les mots-clé then et else </p>
+					<p> Si plusieurs instructions sont nécessaires il faudra penser à programmer une boucle du type DO END</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Calcul des variables et identifications des valeurs manquantes*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Report_Monde_Final;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.Report_Monde_Final;</p>
+							<p>&nbsp <span class="bleu">if</span> (sales_fr ne <span class="bleuForm">.</span> and sales_de ne <span class="bleuForm">.</span> and sales_uk ne <span class="bleuForm">.</span>)</p>
+							<p>&nbsp <span class="bleu">then do</span>;</p>
+							<p>&nbsp&nbsp sales_euro_cont = <span class="bleu">put</span>((sales_fr + sales_de), <span class="bleuForm">$20.</span>);</p>
+							<p>&nbsp&nbsp sales_world = <span class="bleu">put</span>((sales_fr + sales_de + sales_uk), <span class="bleuForm">$20.</span>);</p>
+							<p>&nbsp <span class="bleu">end</span>;</p>
+							<p>&nbsp <span class="bleu">else do</span>;</p>
+							<p>&nbsp&nbsp sales_euro_cont = <span class="violet">'Données incomplètes'</span>;</p>
+							<p>&nbsp&nbsp sales_world = <span class="violet">'Données incomplètes'</span>;</p>
+							<p>&nbsp <span class="bleu">end</span>;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 7</h2>
+					<p>Créer à l'aide des instructions input et cards, 3 nouveaux modèles</p>
+					<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000"> 
+						<TH border="1" style="text-align: center;border:medium solid #000000"> VAR </TH> 
+						<TH border="1" style="text-align: center;border:medium solid #000000"> Modèle 1 </TH> 
+						<TH border="1" style="text-align: center;border:medium solid #000000"> Modèle 2 </TH> 
+						<TH border="1" style="text-align: center;border:medium solid #000000"> Modèle 3 </TH> 
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Make </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Mercedes-Benz</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Mercury</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Scion</TD>
+ 						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Model </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> CL550 2dr</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Mountaineer Road 2</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> xZ 4dr hatch core</TD>
+ 						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Type </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Sedan</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> SUV</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Sedan</TD>
+ 						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Origin </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Europe</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> USA</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Asia</TD>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> DriveTrain </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Rear</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Front</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Front</TD>
+ 						</TR> 		
+						<TD border="1" style="text-align: center;border:medium solid #000000"> MSRP </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 104 820$</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 39 995$</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 10 000$</TD>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Invoice </TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 93 324$</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 32 317$</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 8 500$</TD>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> EngineSize</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 5</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 4</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 1.5</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Cylinders</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 8</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 6</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 4</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Horsepower</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 302</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 210</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 108</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> MPG_City</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 16</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 16</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 32</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> MPG_Highway</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 24</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 21</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 38</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Weight</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 4085</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 4374</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 2340</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Wheelbase</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 114</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 114</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 93</TD>
+ 						</TR>
+ 						</TR>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> Lenght</TD> 
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 196</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 190</TD>
+ 						<TD border="1" style="text-align: center;border:medium solid #000000"> 154</TD>
+ 						</TR>
+					</table></small>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Création de 3 nouveaux modèles*/</span> </p>
+							<p>
+								<span class="bleuG">DATA</span>
+								app2.NEW_CARS ;
+							</p>
+							<p>
+								<span class="bleu">format</span>
+								Make Origin <span class="bleuForm">$13.</span>;
+							</p>
+							<p>
+								<span class="bleu">format</span>
+								Model  <span class="bleuForm">$40.</span>;
+							</p>
+							<p>
+								<span class="bleu">format</span>
+								Type  <span class="bleuForm">$6.</span>;
+							</p>
+							<p>
+								<span class="bleu">format</span>
+								DriveTrain  <span class="bleuForm">$5.</span>;
+							</p>
+							<p>
+								<span class="bleu">format</span>
+								MSRP Invoice  <span class="bleuForm">DOLLAR21.2</span>;
+							</p>
+							<p class="tab1">
+								<span class="bleu">input </span>
+								 Make $ Model $ Type $ Origin $ DriveTrain $ MSRP Invoice EngineSize Cylinders Horsepower MPG_City MPG_Highway Weight Wheelbase Length;
+							</p>
+
+							<p class="tab1">
+							  <span class="bleu">Cards</span>;</p>
+							<p class="tab1">
+							   <span style="background:#FFFF99"> Mercedes CL550_2dr Sedan Europe Rear 104820.00 93324.00 5 8 302 16 24 4085 114 196 </span>
+							</p>
+							<p class="tab1">
+							   <span style="background:#FFFF99"> Mercury  Mountaineer_Road_2 SUV USA Front 39995.00	32317.00 4 6 210 16 21 4374 114 190  </span>
+							</p>	
+							<p class="tab1">
+							   <span style="background:#FFFF99"> Scion xZ_4dr_hatch_core Sedan Asia Front 10000.00 8500.00 1.5 4 108 32 38 2340 93 154 </span>
+							</p>						
+							<p>;</p>
+							<p>
+							<span class="bleuG">RUN</span>;					
+							</p>
+						</small>
+					</div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Utilisation des étapes DATA - Partie 7</h2>
+					<p>Ajouter les trois nouveaux modèles aux anciens dans une table nommée Resume_Cars_New</p>
+				</section>
+				<section>
+					<h3>Solution</h3>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleuForm">/*Concaténation des fichiers*/</span> </p>
+							<p><span class="bleuG">DATA</span> app2.Resume_NEW;</p>
+							<p>&nbsp <span class="bleu">SET</span> app2.CARS app2.NEW_CARS;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+			</section>
+
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!--                                     LES SLIDES DE BASE POUR EXEMPLES                                 -->
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>			

@@ -1,0 +1,2238 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Dauphine Statistiques et études économiques sous SAS - Cours 2 - Manipulation des tables de données : Les étapes DATA</title>
+
+		<meta name="description" content="Cours dauphine using HTML">
+		<meta name="author" content="Pierre-Michel Becquet & Jerôme Lepagnol">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/beige.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				
+				<!-- Slide de titre -->
+				<section>
+					<h1>Statistiques et études économiques sous SAS</h1>
+					<h2>&nbsp  </h2>
+					<h3>Manipulation des tables de données :					</h3>
+					<h3>					Les étapes DATA					</h3>
+				</section>
+<!--///////////// I- Généralités sur les étapes DATA///////////////////////////-->
+				<section>
+					<h2>Généralités</h2>
+				</section>
+
+				<section>
+					<h3>Description d'une étape DATA</h3>
+					<p>	La syntaxe d'une étape DATA est la suivante	</p>
+					<div class="fontcode">
+						<small>
+							<p>	
+								<span class="bleuG">DATA</span> 
+								nom_de_ma_librairie.nom_de_ma_table ;
+							</p>
+							<p class="tab1">
+								[instructions] ;
+							</p>
+							<p>	<span class="bleuG">RUN </span>	;</p>
+						</small>
+					</div>				
+					<p>&nbsp </p>
+					<p>	Cette étape consiste à créer une table qui sera stockée dans la librairie sélectionnée</p>
+					<p> Par défaut, la table sera stockée dans la librairie temporaire WORK	</p>		
+					
+				</section>
+				
+				<section>
+					<section>
+					<h3>Déroulé d'une étape DATA</h3>
+					<img src="img/data step.JPG"/>
+					</section>
+					<section>
+					<h3>Compilation et éxecution d'une étape DATA</h3>
+					<img src="img/compil-exec.JPG"/>
+					</section>
+					<section>
+					<h3>Compilation DATA illustration</h3>
+					<p align = 'left'>
+					data example_x;<br>
+					x = 'CAT'<br>
+					y = 'DOG';<br>
+					run;</p>
+					<img src="img/erreur-compil.JPG"/>
+					</section>
+					<section>
+					<h3>Compilation DATA correction</h3>
+					<p align = 'left'>
+					data example_x;<br>
+					x = 'CAT';	<br>
+					y = 'DOG';<br>
+					run;</p>
+					<img src="img/erreur-corrigee.JPG"/>
+					</section>
+					<section>
+					<h3>Execution DATA illustration</h3>
+					<p align = 'left'>
+					Traitement d'un cas simple (une ligne avec <i>output</i> implicite)<br>
+					</p>
+					<img src="img/resultat_execution.JPG"/>
+					<p align = 'left'>
+					Traitement itératif de chaque ligne<br></p>
+					<p align = 'left'>
+					<small>
+					<Font face="Courier New" >
+					data grades;<br>
+					&nbsp; StudentID=101; Class="A"; English=80; Math=70; output;<br>
+					&nbsp; StudentID=102; Class="B"; English=. ; Math=60; output;<br>
+					&nbsp; StudentID=103; Class="A"; English=70; Math=. ; output;<br>
+					&nbsp; StudentID=104; Class="A"; English=80; Math=95; output;<br>
+					&nbsp; StudentID=105; Class="B"; English=90; Math=80; output;<br>
+					run;<br>
+					</small>
+					</Font>
+					</p>
+					<img src="img/grades.JPG"/>
+					</section>
+				</section>
+				
+				
+				
+				<section><h2>L'instruction SET</h2> </section>
+				
+				<section>
+
+					<h3>Duplication de table</h3>
+					<p>&nbsp<p/>
+					<p>
+						Pour dupliquer une table existante dans une autre librairie
+					</p>
+					<p>&nbsp<p/>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> nom_ancienne_librairie.nom_ancienne_table ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>Cette étape consiste à dupliquer l'ancienne table dans une autre librairie
+					</p>
+				</section>	
+				<section>
+					<h3>Selection de variable</h3>
+					<p>&nbsp<p/>
+						<p> Il est possible de conserver ou de supprimer des variables d'une table à l'aide des instructions KEEP et DROP
+					</p>
+				</section>
+				
+				<section>
+					<h3>L'instruction KEEP</h3>
+					<p>
+						Pour conserver une variable présente dans une table il convient d'utiliser comme suit le mot clé KEEP
+					</p>
+
+					<p>&nbsp<p/>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table (</font>
+						<Font face="Courier New"  color=#0000FF> keep</font>
+						<Font face="Courier New"color=#000000> =nom_de_la_variable_à_conserver ) ; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>De manière équivalente, l'étape peut s'écrire comme suit
+					</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table  ;</font>
+					</p>
+					<p>
+					<Font face="Courier New"  color=#0000FF> &nbsp keep </Font>
+					<Font face="Courier New"color=#000000>  nom_de_la_variable_à_conserver ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+
+				<section>
+
+					<h3>L'instruction DROP</h3>
+					<p>
+						Pour supprimer une variable présente dans une table il convient d'utiliser comme suit le mot clé DROP
+					</p>
+					<p>&nbsp<p/>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table (</font>
+						<Font face="Courier New"  color=#0000FF> drop</font>
+						<Font face="Courier New"color=#000000> =nom_de_la_variable_à_supprimer ) ; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>De manière équivalente, l'étape peut s'écrire comme suit
+					</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table  ;</font>
+					</p>
+					<p>
+					<Font face="Courier New"  color=#0000FF> &nbsp drop </Font>
+					<Font face="Courier New"color=#000000>  nom_de_la_variable_à_supprimer ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>
+					</small>
+				</section>
+				<section>
+
+					<h3>Selection de variable</h3>
+					<p>
+						Les quatre étapes ci-dessous renvoient la même table en résultat
+					</p>
+					<p>&nbsp</p>
+					<table >
+						<TR> 
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class ; </font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small> 
+						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp drop </Font>
+							<Font face="Courier New"color=#000000> Age Height Weight  ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> &nbsp keep </Font>
+							<Font face="Courier New"color=#000000> Name Sex  ;</font></small> 
+						</TD></TR>	
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD></TR>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+					</TR>
+
+						<TR> 
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class ; </font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class (</font>
+ 							<Font face="Courier New"  color=#0000FF> drop</Font>
+							<Font face="Courier New"color=#000000>= Age Height Weight)  ;</font>
+							</small>	
+						</TD>
+ 						<TD style="text-align: left"> <small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class (</font>
+ 							<Font face="Courier New"  color=#0000FF> keep</Font>
+							<Font face="Courier New"color=#000000>= Name Sex)  ;</font>	
+							</small>	
+						</TD></TR>	
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD></TR></table>
+				</section>
+
+				<section>
+
+					<h3>Selection de modalités ou Filtrage d'observations</h3>
+					<p>&nbsp</p>
+					<p>
+						Pour conserver ou supprimer des modalités d'une variable présente dans une table, différentes instructions sont envisageables
+					</p>
+					<p>Les instructions WHERE, OUTPUT et DELETE</p>
+				</section>
+				<section>
+					<h3> L'instruction WHERE</h3>
+					<p>Pour conserver uniquement les observations qui respectent une condition, on peut utiliser l'instruction WHERE
+					 </p>
+					<i>Le filtre s'applique à la lecture de la table source
+					<br> <br> </i>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table (</font>
+						<Font face="Courier New"  color=#0000FF> where</font>
+						<Font face="Courier New"color=#000000> =<i>[condition]</i> ) ; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>De manière équivalente, l'étape peut s'écrire comme suit
+					</p>
+					<i>Le filtre s'applique à l'écriture de la table cible
+					<br> <br> </i>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> where</font>
+						<Font face="Courier New"color=#000000> <i>[condition]</i>; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+				<section>
+					<h3> Les instruction OUTPUT et DELETE</h3>
+					<p>Pour conserver uniquement les observations qui respectent une condition, on peut utiliser les instructions OUTPUT ou DELETE
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table;</font>
+					<P>
+						<Font face="Courier New"  color=#0000FF> &nbsp If</font>
+						<Font face="Courier New"color=#000000> <i>[condition]</i></Font>
+					
+						<Font face="Courier New"  color=#0000FF> then OUTPUT</font>
+						<Font face="Courier New"color=#000000>;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>De manière symétrique, l'étape peut s'écrire comme suit
+					</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table;</font>
+					<P>
+						<Font face="Courier New"  color=#0000FF> &nbsp If</font>
+						<Font face="Courier New"color=#000000> <i>[condition]</i></Font>
+					
+						<Font face="Courier New"  color=#0000FF> then DELETE</font>
+						<Font face="Courier New"color=#000000>;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+			<section>
+
+					<h3>Selection de variable</h3>
+					<p>
+						Les quatre étapes ci-dessous renvoient la même table en résultat
+					</p>
+					<p>&nbsp</p>
+					<table width="75%" height="75%" border="0">
+
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small> 
+						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF>&nbsp if </Font>
+							<Font face="Courier New"color=#000000> Age < 15 </font>
+							<Font face="Courier New"  color=#0000FF> then OUTPUT </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF>&nbsp if </Font>
+							<Font face="Courier New"color=#000000> Age >= 15 </font>
+							<Font face="Courier New"  color=#0000FF> then DELETE </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	 
+						</TD></TR>	
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD></TR>
+
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class (</font>
+							</small>	
+						</TD>
+ 						<TD style="text-align: left"> <small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class ;</font></small>	
+						</TD></TR>
+						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF>&nbsp &nbsp  where </Font>
+							<Font face="Courier New"color=#000000> = (age < 15) ) ;</font></small>
+						</TD>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF>&nbsp where </Font>
+							<Font face="Courier New"color=#000000> age < 15 ;</font></small>	
+						</TD></TR> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD>
+						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD>
+					</TR></table>
+				</section>
+				<section>
+					<h3>Les instructions OBS et FIRSTOBS</h3>
+					<p>
+						Il est également possible de sélectionner les variables selon leur numéro de lignes
+					</p>
+					<i>Ici on choisit les lignes de i à j (j-i+1 observations)
+					<br>Il faut que j soit supérieur ou égal à i !<br><br> </i>
+					<div align="left"><small>
+							<p>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_5 ; </font>
+						   </p><p>
+						   <Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class (</font>
+							<Font face="Courier New"  color=#0000FF>firstobs </Font>
+							<Font face="Courier New"color=#000000> = i </font>
+							<Font face="Courier New"  color=#0000FF> obs  </Font>
+							<Font face="Courier New"color=#000000> = j ) ;</font>	 
+							</p>
+	 						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font>						
+							</p>
+						</small></div>
+					<p>&nbsp</p>
+					<p>
+						Par <i>défaut</i> l'option firstobs est égal à 1, le code ci-dessous renvoie les j premières lignes du tableau
+					</p>
+					<p>&nbsp</p>
+					<div align="left"><small>
+							<p>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_5 ; </font>
+						   </p><p>
+						   <Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class (</font>
+							<Font face="Courier New"  color=#0000FF> obs  </Font>
+							<Font face="Courier New"color=#000000> = j ) ;</font>	 
+							</p>
+	 						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font>						
+							</p>
+						</small></div>
+				</section>	
+
+				<section>
+				<section>
+					<h3>Remarques</h3>
+					<p>
+						Les instructions WHERE, FIRSTOBS, OBS, KEEP et DROP peuvent être des options de l'instruction SET
+					</p>
+					<p>
+						Les instructions OUTPUT et DELETE ne peuvent pas être utilisées comme des options
+					</p>
+				</section>
+				<section>
+					<h3>Remarques</h3>
+					<p>
+						Afin de définir le complémentaire d'une condition il est possible d'utiliser le mot clé NOT devant une condition
+					</p>
+					<p>&nbsp</p>
+					<table>
+						<TR> 
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yng ; </font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class  ;</font></small> 
+						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF>&nbsp if </Font>
+							<Font face="Courier New"color=#000000> Age < 15 </font>
+							<Font face="Courier New"  color=#0000FF> then OUTPUT </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF>&nbsp if NOT </Font>
+							<Font face="Courier New"color=#000000>( Age < 15 )</font>
+							<Font face="Courier New"  color=#0000FF> then DELETE </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	 
+						</TD></TR>	
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD></TR></table>
+					</section>
+					<section>
+						<h3>Remarques</h3>
+						<p>
+							L'instruction WHERE doit être unique dans une étape DATA
+						</p>
+					<table>
+						<p>&nbsp</p>
+						<TR> 
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yngM ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b><s> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_yngM ; <s></font></small>	
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class ;</font>
+							</small>	
+						</TD>
+ 						<TD style="text-align: left"> <small>
+							<Font face="Courier New"  color=#0000FF> &nbsp<s> set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class ;</s></font></small>	
+						</TD></TR>
+						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF> &nbsp  where </Font>
+							<Font face="Courier New"color=#000000> ( Age < 15 </font>
+							<Font face="Courier New"  color=#0000FF> and </Font>
+							<Font face="Courier New"color=#000000> Sex = "M" ) ;</font></small>
+						</TD>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF>&nbsp<s> where </Font>
+							<Font face="Courier New"color=#000000> Age < 15 ;</s></font></small>	
+						</TD></TR> 
+						<TD style="text-align: left"><small>
+ 						</TD>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF>&nbsp<s> where </Font>
+							<Font face="Courier New"color=#000000> Sex = "M" ;</s></font></small>
+						</TD></TR> 
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD>
+						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF><s> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</s></font></small>	
+						</TD>
+					</TR></table>
+					<p>&nbsp</p>
+					<p>
+						Dans le second exemple, seule la seconde instruction WHERE est prise en compte
+					</p>
+					</section>
+					<section>
+						<h3>Remarques</h3>
+						<p>Il est également possible de créer plusieurs table en une seule instruction DATA
+						</p>
+						<div align="left"><small>
+						<p>&nbsp</p>
+							<p>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class_Garcons cours2.Class_filles ; </font>
+						   </p><p>
+						   <Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> sashelp.Class ;</font>
+							</p><p>
+							<Font face="Courier New"  color=#0000FF>&nbsp if </Font>
+							<Font face="Courier New"color=#000000> Sex = "M" </font>
+							<Font face="Courier New"  color=#0000FF> then OUTPUT  </Font>
+							<Font face="Courier New"color=#000000> cours2.Class_Garcons ;</font>	 
+							</p><p>
+							<Font face="Courier New"  color=#0000FF>&nbsp else </Font>
+							<Font face="Courier New"  color=#0000FF> OUTPUT  </Font>
+							<Font face="Courier New"color=#000000> cours2.Class_filles ;</font>
+							</p><p>
+	 						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font>						
+							</p>
+						</small></div>
+					</section>	
+			</section>
+
+		<section>	
+			<section>
+				<h3>ATTENTION</h3>
+				<p>Il est possible de modifier une table existante</p>
+				<p>Pour ce faire, il suffit d'appeler la même table dans l'instruction DATA et l'instruction SET</p>
+				<p>La plus grande prudence doit être observée quand on modifie une table sans quoi des données peuvent être accidentellement et définitivement supprimées</p>
+			</section>
+			<section>
+				<h3>ATTENTION</h3>
+				<p>On peut supprimer définitivement toutes les observations d'une table en se trompant lors de la conservation des variables ou des modalités</p>
+						<div align="left"><small>
+						<p>&nbsp</p>
+							<p>
+							<Font face="Arial" > <b> Exemple </b></Font><br><br>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class;</font>
+						   </p><p>
+						   <Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> cours2.Class ( </font>
+							<Font face="Courier New"  color=#0000FF>where </Font>
+							<Font face="Courier New"color=#000000>= (Sex = 'Male')) ;</font>
+							</p><p>
+	 						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font>						
+							</p>
+						</small></div>
+						<p>&nbsp</p>
+					<p>Le système ne génère <u>pas</u> de message d'avertissement</p>
+					<p>Le programme s'exécute mais il ne retient que les variables telles que définies dans l'instruction where</p>
+					<p>Or Sex vaut 'M' ou 'F' , mais pas 'Male' ; la table est donc vidée de toutes les observations et ce, de manière définitive</p>
+			</section>
+		</section>
+
+			<section>
+				<h2>Création et Modification des attributs d'une variable</h2>
+			</section>
+			<section>
+				<section>
+					<h3>Création de variables</h3>
+					<p>Pour créer une variable, SAS n'a besoin que de son nom et lui attribuer une ou plusieurs valeurs à l'aide du symbole = </p>
+					<div align="left"><small>
+						<p>&nbsp; </p>
+							<p>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Class;</font>
+						   </p>
+						   <p>
+						   		<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+								<Font face="Courier New"color=#000000> cours2.Class ;</font>
+							</p>
+							<p>
+								<Font face="Courier New"  color=#000000>un = 1;</Font>
+							</p>
+							<p>
+								<Font face="Courier New"  color=#000000>n = _N_;</Font>
+							</p>
+							<p>
+								<Font face="Courier New"  color=#000000>Nom = Name;</Font>
+							</p>
+							<p>
+	 						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font>						
+							</p></small></div>
+					</section>
+				<section>
+					<h3>Création de variables</h3>
+					<p>Le programme ci-dessus génère trois nouvelles variables, qui seront créées dans trois nouvelles colonnes à droite de la table, et qui prendra pour chaque observation :</p>
+					<ul>
+					<li><i>"un"</i> aura pour chaque observation la valeur 1 et sera par défaut une variable numérique</li>
+					<li><i>"n"</i> aura pour chaque observation la valeur du numéro d'observation (i.e. le numéro de la ligne sur laquelle se trouve l'observation) et sera donc une variable numérique</li>
+					<li><i>"Nom"</i> aura comme valeur la valeur et les attributs de la variable Name</li>
+					</ul>
+				</section>
+		</section>
+			<section>
+				<h3>L'instruction RENAME</h3>
+				<p> Il est possible de renommer une variable à l'aide de l'instruction RENAME<br>
+				<small><br>A la lecture </small></p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table (</font>
+						<Font face="Courier New"  color=#0000FF> rename</font>
+						<Font face="Courier New"color=#000000> =(ancien_nom = nouveau_nom) ) ; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>De manière équivalente, l'étape peut s'écrire comme suit
+					<br>
+					<small><br>A l'écriture </small></p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> rename </font>
+						<Font face="Courier New"color=#000000> ancien_nom = nouveau_nom ; </Font>					
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+			</section>
+
+			<section>
+				<section>
+				<h2>L'instruction LENGTH</h2>
+				<p> Il est possible de modifier la longueur d'une variable à l'aide de l'instruction LENGTH</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_nouvelle_librairie.nom_nouvelle_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> length </font>
+						<Font face="Courier New"color=#000000> ma_variable < $ > n ; </Font>
+					</p>
+					<p>
+
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> ancienne_table  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>
+						Le symbole $ est utilisé dans le cas de variable qualitative
+					</p>
+					<p>
+						n est un entier qui représente la taille maximale de la variable
+					</p>
+					
+			</section>
+			<section>
+				<h2>L'instruction LENGTH</h2>
+				<p> L'instruction LENGTH s'utilise comme suit</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Class ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp length </font>
+						<Font face="Courier New"color=#000000> Name $45 ; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> sashelp.Class  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+			</section>
+		</section>
+		<section>
+		<section>
+			<h2>Les fonctions PUT et INPUT</h2>
+			<p>Il est possible de convertir une variable alphanumérique en variable numérique et inversement à l'aide des fonctions PUT et INPUT</p>
+		</section>
+		<section>
+			<h2>Les fonctions PUT et INPUT</h2>
+			<p>Le programme suivant convertit une variable caractère en numérique</p>
+			<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_de_ma_librairie.nom_de_ma_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> nom_ancienne_librairie.nom_ancienne_table  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp &nbsp Format </Font>
+						<Font face="Courier New"color=#000000>var_num  n.w ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"color=#000000> var_num = </font>
+						<Font face="Courier New"  color=#0000FF> input </Font>							
+						<Font face="Courier New"color=#000000> (var_car , n.w)  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+		</section>
+		<section>
+			<h2>Les fonctions PUT et INPUT</h2>
+			<p>Le programme suivant convertit une variable numérique en caractère</p>
+			<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_de_ma_librairie.nom_de_ma_table ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> nom_ancienne_librairie.nom_ancienne_table  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp &nbsp Format </Font>
+						<Font face="Courier New"color=#000000>var_car  $n. ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"color=#000000> var_car = </font>
+						<Font face="Courier New"  color=#0000FF> put </Font>							
+						<Font face="Courier New"color=#000000> (var_num , $n.)  ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+			</section>
+			<section>
+			<h3>Exemples de ces fonctions</h3>
+			<p  align="left"><small>
+			<b>A</b> PUT() convertit une variable caractère vers une autre variable caractère.<br>
+			<b>B</b> PUT() convertit une variable numérique vers une variable caractère avec une valeur numérique .<br>
+			<b>C</b> PUT() convertit une variable caractère avec un format "user-defined"  vers une autre variable caractère.<br>
+			<b>D</b> INPUT() convertit une variable caractère avec une valeur numérique et un informat vers une v. numérique.<br>
+			<b>E</b> INPUT() convertit une variable caractère avec une valeur numérique et un informat vers une v. caractère.<br>
+			<b>F</b> INPUT() convertit une variable caractère avec une valeur numérique et un informat vers une v. numérique.<br>
+			</p></small>
+					<img src="img/put-input.JPG"/>
+			</section>
+		</section>
+				<section>
+					<h2>Autres instructions</h2>
+					<p>Il est également possible de modifier le label, le format ou l'informat des variables</p>
+				</section>
+				<section>
+					<h3>Les labels</h3>
+					<p>Le label d'une variable est un champ texte, qui accepte les caractères spéciaux,
+					 et qui permet de fournir une <u>description</u> de la variable</p>
+					<p>Si un label est défini, c'est lui qui apparaitra dans la fenêtre Sortie</p>
+					<p>Il se définit dans une étape DATA comme suit</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> Label </Font>
+						<Font face="Courier New"color=#000000> variable="MON_LABEL" ;</font>
+					</p></small></div>
+				</section>	
+				<section>
+				<section>
+					<h3>Les formats</h3>
+					<p>Le mot clé format renvoie au format de<br> <b>présentation ou de stockage</b></p>
+					<p>Bien qu'attribut facultatif il s'avère important</p>
+					<p>Il peut correspondre à un format prédéfini ou personnalisé</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> Format </Font>
+						<Font face="Courier New"color=#000000> variable < $ > format n.< d >  ;</font>
+					</p></small></div>
+				</section>	
+				<section>
+					<h3>Les informats</h3>
+					<p>Le mot clé informat renvoie au format de <b>lecture</b> </p>
+					<p>Il peut également correspondre à un format prédéfini ou personnalisé</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> Informat </Font>
+						<Font face="Courier New"color=#000000> variable < $ > informat n.< d > ;</font>
+					</p></small></div>
+				</section>	
+				<section>
+					<h3>Format et informat : exemples </h3>
+				<p align="left" >
+					<small>
+						<Font  face="Courier New"  color=#0000FF><b> data </b></Font>
+						<Font face="Courier New" color=#000000> amount;</font>
+						<br>
+						<Font face="Courier New"   color=#0000FF> input </Font>
+						<Font face="Courier New" color=#000000> nombre: best8. salaire comma8. quantity dollar10.;</font>			 
+						 <br>
+						 <Font face="Courier New"   color=#0000FF> format </Font>
+						<Font face="Courier New" color=#000000> nombre salaire  quantity dollar12.4;</font>		
+						<br>
+						<Font face="Courier New" color=#000000> 
+						cards;<br>
+						123 23,333 $2,23,000.66<br>
+						124 30,000 $5,55,000.78<br>
+						;<br>
+						run;<br>
+						</font>	
+					</small></p>
+					<img src="img/format-informat.jpg"/>
+					
+				</section>
+				</section>
+				<section><H2>Concaténation, fusion et mise à jour de tables</H2></section>
+				<section>
+					<h2>La concaténation</h2>
+					<p>La concaténation consiste à l'assemblage verticale de tables</p>
+					<p>On peut concaténer 2 tables facilement avec l'instruction SET</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_librairie.nom_table_concat ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> table_1 table_2 ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					</section>
+			<section>
+				<section>
+					<h2>La concaténation</h2>					
+					<p>Pour que le système empile correctement les tables
+					 il faut que les variables aient exactement le même nom et soient de même type (numérique ou caractère)</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> cours2.Class_Garcons Cours2.Class_filles ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>Afin de prévenir les troncatures, le système renvoie un avertissement si deux variables portent le même nom et sont de même type mais présentent des longueurs différentes</p>
+				</section>
+				<section>
+					<h2>La concaténation</h2>
+						<p>Il est possible d'utiliser l'instruction BY afin que la table concaténée soit triée selon une ou plusieurs variables</p>
+						<p>Les tables sources doivent pour cela être correctement triée au préalable</p>
+				</section>
+				<section>
+					<h2>Le concaténation</h2>
+					<p>On l'obtient avec la syntaxe suivante</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_librairie.nom_table_concat ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> table_1 table_2 ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+						<Font face="Courier New"color=#000000> var1 var2 ... varn ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>Il est possible de trier par autant de variables que l'on souhaite</p>
+					<p>Le tri s'effectuera selon l'ordre défini par le programme</p>
+				</section>
+				<section>
+					<h2>La concaténation</h2>
+					<p>Si nous souhaitons trier selon le sexe puis l'age des élèves, nous écrirons le programme suivant</p> 
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> cours2.Class_Garcons Cours2.Class_filles ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+						<Font face="Courier New"color=#000000> Sex Age ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>				
+				</section>
+				<section>
+					<h2>Remarque</h2>
+					<p>Le fait que les tables doivent être préalablement triées rend cette option peut utilisée </p>
+					<p>On préfèrera trier la table concaténée après l'opération</p>
+					<div align="left">
+					<table width="150%" height="120%" border="0">
+						<p>&nbsp</p>
+						<TR> 
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> PROC SORT </b> data</Font>
+							<Font face="Courier New"  color=#000000>=cours2.Class_Filles; </font></small>
+						<TD style="text-align: left"> <small> 
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font></small>	
+						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> by </Font>
+							<Font face="Courier New"  color=#000000> Sex Age; </font>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD>
+						<TD style="text-align: left"> <small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000>  cours2.Class_Filles cours2.Class_Garcons ; </font></small>	</TD>
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> PROC SORT </b> data</Font>
+							<Font face="Courier New"  color=#000000>=cours2.Class_Garcons; </font>
+						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>	</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> by </Font>
+							<Font face="Courier New"  color=#000000> Sex Age; </font>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD>
+						<TD></TD>
+						</TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+							<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font></small>	
+						</TD> 
+ 						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF> <b> PROC SORT </b> data</Font>
+							<Font face="Courier New"  color=#000000>=cours2.Classe_entiere; </font></small>
+ 						</TD></TR>
+						<TD style="text-align: left"><small>
+							<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+							<Font face="Courier New"color=#000000> cours2.Filles cours2.Garcons ;</font></small>	
+						</TD>
+ 						<TD style="text-align: left"><small>
+ 							<Font face="Courier New"  color=#0000FF> by </Font>
+							<Font face="Courier New"  color=#000000> Sex Age; </font>
+							<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD></TR>
+						<TD style="text-align: left"> <small>
+							<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+							<Font face="Courier New"color=#000000> Sex Age ; </font></small>	
+						</TD>
+						<TD></TD></TR>
+ 						<TD style="text-align: left"> <small>
+ 							<Font face="Courier New"  color=#0000FF> <b>RUN</b></Font>
+							<Font face="Courier New"color=#000000> ;</font></small>
+						</TD>
+						<TD style="text-align: left">
+						</TD>
+					</TR>
+						<TD></TD>
+						<TD style="text-align: left"><small>
+
+						</TR>
+						<TD></TD>
+						<TD style="text-align: left"><small>
+
+						</TD>
+						</TR>
+				</table></div>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>La concaténation</h2>
+					<p>Il est possible de modifier les tables d'entrée en utilisant les options de l'instruction SET</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New" color=#000000> cours2.Class_Garcons (options) Cours2.Class_filles (options);</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+				<section>
+					<h2>Exemple</h2>
+					<p>Nous souhaitons créer une table avec les filles de plus de 15 ans et les garçons de plus de 1m60</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New" color=#000000> cours2.Class_Garcons (</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> rename </font>
+						<Font face="Courier New" color=#000000>=(Height=Taille_en_m) </font> 
+						<Font face="Courier New"  color=#0000FF> where</Font>
+						<Font face="Courier New" color=#000000>=(Taille_en_m >= 160/2.54))</Font>
+					</p>
+					<p>
+					 <Font face="Courier New" color=#000000>&nbsp Cours2.Class_filles (</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> rename </font>
+						<Font face="Courier New" color=#000000>=(Height=Taille_en_m) </font>
+						<Font face="Courier New"  color=#0000FF>where</Font>
+					 	<Font face="Courier New" color=#000000>=(Age>=15));</font>
+					</p>
+					<p>
+						<Font face="Courier New"color=#000000> Taille_en_m = Taille_en_m * 2.54;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>La concaténation</h2>
+					<p>&nbsp</p>
+					<p>Il est possible de <b>traquer</b> la table d'où provient les données que l'on vient d'ajouter à l'aide de l'option IN</p>
+				</section>
+				<section>
+					<h2>Exemple</h2>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Classe_entiere ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New" color=#000000> cours2.Class_Garcons (</Font>
+						<Font face="Courier New"  color=#0000FF> In </font>
+						<Font face="Courier New" color=#000000>= Type) </font> 
+					</p>
+					<p>
+					 <Font face="Courier New" color=#000000>&nbsp Cours2.Class_filles ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> If </font>
+						<Font face="Courier New"color=#000000> Type = 1 </Font>
+						<Font face="Courier New"  color=#0000FF> then	</font>
+						<Font face="Courier New"color=#000000> table_origine = "Garcons" ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> else	</font>
+						<Font face="Courier New"color=#000000> table_origine = "Filles" ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>Le mot clé IN crée un booléen qui est égal à 1 si l'individu est contenu dans la table appelée précédemment à l'instruction et 0 sinon</p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>La fusion</h2>
+					<p>Nous avons vu jusqu'à maintenant la concaténation, c'est à dire l'ajout d'individus (ou de lignes) en concaténant plusieurs tables</p>
+					<p>La fusion permet d'ajouter des variables (ou des colonnes) en fusionnant à l'aide de l'instruction MERGE deux tables selon un identifiant qui complètera de manière obligatoire la clause BY</p>
+					<p>&nbsp</p>
+					<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_de_ma_librairie.table_fusionnée ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp Merge </Font>
+						<Font face="Courier New" color=#000000> table1 </Font>
+					<Font face="Courier New" color=#000000> table2 ;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp by	</font>
+						<Font face="Courier New"color=#000000> <i>Identifiants</i>; </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+				<section>
+					<h2>Remarque</h2>
+					<p> De même que pour la concaténation, la clause BY indique que les tables doivent <u>impérativement</u> être triées préalablement à l'exécution de l'étape DATA</p>
+				</section>
+				<section>
+					<h2>Attention</h2>
+					<p>Seuls les identifiants doivent être des variables de même noms. Leurs valeurs sont égales entre les 2 tables.</p> 
+					<p>Si deux variables (non identifiants) portent le même nom dans les deux tables, les données de la première table seront écrasées</p>
+					<p>Sans clause BY, l'instruction revient à une simple <u>juxtaposition</u> des deux tables</p>
+				</section>
+			</section>
+				<section>
+					<h2>La fusion</h2>
+					<p>La fusion consiste à l'assemblage horizontale de tables</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Notes_classe ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp merge </Font>
+						<Font face="Courier New"color=#000000> cours2.Class cours2.Note ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp by </Font>
+						<Font face="Courier New"  color=#000000>  Name ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					</section>
+					<section>
+						<h2>La fusion</h2>
+						<p> La fusion peut générer des valeurs manquantes dans le cas où un individu est identifié dans une table mais pas dans l'autre<p>
+						<p>Afin d'éviter ces valeurs manquantes on pourra fusionner en ne conservant que les individus d'une seule table</p>
+						<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Notes_classe ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp merge </Font>
+						<Font face="Courier New"color=#000000> cours2.Class cours2.Note_rattrapage (</font>
+						<Font face="Courier New"  color=#0000FF> IN </Font>
+						<Font face="Courier New"color=#000000> = A);</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+						<Font face="Courier New"  color=#000000>  Name ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if  </Font>
+						<Font face="Courier New"  color=#000000>  A ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>	
+				</section>
+				<section>
+					<h2>La mise à jour ou UPDATE</h2>
+					<p>La mise à jour de table peut être vue comme un cas particulier de la fusion</p>
+					<p>Elle consiste en l'ajout de données initialement manquantes ou en une actualisation de données contenues dans une table</p>
+					<p>Elle s'effectue avec l'instruction UPDATE</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> nom_de_ma_librairie.Table_update ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp update </Font>
+						<Font face="Courier New"color=#000000> table1 table2 ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+						<Font face="Courier New"  color=#000000>  Identifiants ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>						
+				</section>
+				<section>
+					<h2>La mise à jour ou UPDATE</h2>
+					<p>Appliquée à notre exemple, l'update s'utilise comme suit</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.note_finale ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp update </Font>
+						<Font face="Courier New"color=#000000> cours2.Note cours2.Rattrapages ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp by </Font>
+						<Font face="Courier New"  color=#000000>  Name ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>L'instruction By nous rappelle une fois encore que les tables doivent au préalable être dûment triées</p>			
+				</section>
+				<section>
+					<h2>Les conditions et les boucles</h2>
+				</section>
+				<section>
+					<h3>Boucle DO</h3>
+					<p>Il existe 3 types de boucles sous SAS</p>
+					<p>Les boucles finies DO TO</p>
+					<p>Les boucles "tant que" DO WHILE</p>
+					<p>Les boucles "jusqu'à" DO UNTIL</p>
+				</section>
+			<section>
+				<section>
+					<h3>Les boucles finies</h3>
+				<p>Les boucles finies ont la synthaxe suivante</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> do </Font>
+						<Font face="Courier New"  color=#000000> i = n </font>	
+						<Font face="Courier New"  color=#0000FF> to </Font>
+						<Font face="Courier New"color=#000000> m </font>
+						<Font face="Courier New"  color=#0000FF> by </Font>
+						<Font face="Courier New"color=#000000>s ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_1</i> ; </Font>						
+					</p>					
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_2</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_3</i> ; </Font>						
+					</p>
+					<p>
+						&nbsp &nbsp (...)
+					</p>		
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_n</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#0000FF> end </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div></small>
+					</section>
+					<section>
+					<h3>Les boucles finies</h3>
+					<p>&nbsp</p>
+					<p>Les instructions sont réalisées de manière itérative</p>
+					<p>A chaque fin de la boucle d'instructions signalée par le mot clé end i est incrémenté de la valeur s (qui représente le pas)</p> 
+					<p>Par défaut s =1</p>
+					<p>La boucle s'arrête lorsque i devient strictement supérieur à m<p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Les boucles DO WHILE</h2>
+					<p>Les boucles "tant que" exécutent les instructions tant que la condition définie est vérifiée</p>
+						<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> do </Font>
+						<Font face="Courier New"  color=#0000FF> while </font>	
+						<Font face="Courier New"  color=#000000> (<i>condition</i>) </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_1</i> ; </Font>						
+					</p>					
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_2</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_3</i> ; </Font>						
+					</p>
+					<p>
+						&nbsp &nbsp (...)
+					</p>		
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_n</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#0000FF> end </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div></small>
+				</section>
+				<section>
+					<h3>Les boucles DO WHILE</h3>
+					<p>&nbsp</p>
+					<p>Les instructions sont réalisées de manière itérative</p>
+					<p>A chaque fin de la boucle d'instructions signalée par le mot clé end la condition est testée</p>
+					<p>La boucle s'arrête lorsque la condition n'est plus vérifiée<p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Les boucles DO UNTIL</h2>
+					<p>Les boucles "jusqu'à" exécutent les instructions tant que la condition définie n'est pas vérifiée</p>
+						<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> do </Font>
+						<Font face="Courier New"  color=#0000FF> until </font>	
+						<Font face="Courier New"  color=#000000> (<i>condition</i>) </Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_1</i> ; </Font>						
+					</p>					
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_2</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_3</i> ; </Font>						
+					</p>
+					<p>
+						&nbsp &nbsp (...)
+					</p>		
+					<p>
+						<Font face="Courier New"  color=#000000> &nbsp <i>instruction_n</i> ; </Font>						
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#0000FF> end </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div></small>
+				</section>
+				<section>
+					<h3>Les boucles DO UNTIL</h3>
+					<p>&nbsp</p>
+					<p>Les instructions sont réalisées de manière itérative</p>
+					<p>A chaque fin de la boucle d'instructions signalée par le mot clé end la condition est testée</p>
+					<p>La boucle s'arrête lorsque la condition est vérifiée<p>
+				</section>
+			</section>
+			<section>
+			<h3>Note</h3>
+			<p>Dans la suite de ce chapitre toutes les instructions peuvent être remplacées par des boucles d'instructions</p>
+			</section>
+			<section>
+				<section>
+					<h3>La condition IF THEN ELSE</h3>
+					<p>Certaines instructions doivent être réalisées si une condition est au préalable remplie</p>
+					<p>Le mot clé IF permet d'introduire de la conditionnalité</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> if </Font>
+						<Font face="Courier New"  color=#000000> <i>condition(s)</i> </font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> <i> instruction</i> ;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> else </Font>
+						<Font face="Courier New"  color=#000000>  <i>instruction</i> ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+				<section>
+					<h3>Exemples</h3>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Resultats_promo ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> cours2.Note_Finale;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 10 </Font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> Result = "Validé";</font>					
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> else </Font>
+						<Font face="Courier New"  color=#000000>  Result = "Non validé" ; </Font>						
+					</p>					
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+					<p>La clause Else est facultative </p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Resultats_promo ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> cours2.Note_Finale;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 10 </Font>	
+						<Font face="Courier New"  color=#0000FF> then Output</Font>
+						<Font face="Courier New"color=#000000>  ;</font>					
+					</p>			
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+					<section>
+						<h3>Conditionnalité multiple</h3>
+						<p>On peut définir plusieurs conditions au sein d'une étape data avec ou sans clause Else</p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Resultats_session1 ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp; set </Font>
+						<Font face="Courier New"color=#000000> cours2.Note;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp; if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 10 </Font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> Result = "Validé";</font>					
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp; &nbsp; &nbsp;&nbsp;else if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 8 </Font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> Result = "Rattrapage";</font>		
+					<p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; else </Font>
+						<Font face="Courier New"  color=#000000>  Result = "Non validé" ; </Font>						
+					</p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.Resultats_session1 ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp; set </Font>
+						<Font face="Courier New"color=#000000> cours2.Note;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 8 <span class="bleu">and</span> note < 10 </Font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> Result = "Rattrapage";</font>		
+					</p>					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if </Font>
+						<Font face="Courier New"  color=#000000>  note >= 10 </Font>	
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"color=#000000> Result = "Validé";</font>					
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp if </Font>
+						<Font face="Courier New"  color=#000000>  note < 8</Font>
+						<Font face="Courier New"  color=#0000FF> then </Font>
+						<Font face="Courier New"  color=#000000>  Result = "Non validé" ; </Font>						
+					</p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>
+				<section><h3>Remarques</h3>
+				<p>La clause Else permet d'éviter à avoir à lister toutes les conditions</p>
+				<p>Elle permet de gérer les cas qui ne respectent pas une condition et d'éviter, dans le cas de création d'une ou plusieurs variables, de générer des valeurs manquantes</p>
+				</section>
+				<section><h3>Remarques</h3>
+					<p>Les conditions peuvent être multiples, et ce avec les opérateurs <span class="bleu">and</span>, <span class="bleu">or</span> et <span class="bleu">not</span></p>
+					<p>L'opérateur <span class="bleu">and</span> signifie que les deux conditions doivent être vérifiées</p>
+					<p>L'opérateur <span class="bleu">or</span> signifie qu'au moins une des conditions doit être vérifiée</p>
+					<p>L'opérateur <span class="bleu">not</span> signifie que le complémentaire de la condition doit être vérifié</p>
+				</section>
+				<section><h3>Illustration</h3>
+					<img src="img/Conditions.jpg"/>
+				</section>
+				<section><h3>Remarques</h3>
+					<p>L'instruction après le mot clé <span class="bleu">then</span> ou <span class="bleu">else</span> doit être unique</p>
+					<p>Il est parfois nécessaire de définir plusieurs instructions</p>
+					<p>Pour cela, il est possible d'utiliser la "boucle" <span class="bleu">do end</span> comme suit</p>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> if </Font>
+						<Font face="Courier New"  color=#000000> <i>condition(s)</i> </font>	
+						<Font face="Courier New"  color=#0000FF> then do</Font>;
+					</p><p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;instruction_1</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;instruction_2</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;...</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;instruction_N</i> ;</font></p>
+					<p>	<Font face="Courier New"  color=#0000FF> end;</Font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> else do</Font>;</p>
+					<p>&nbsp &nbsp	<Font face="Courier New"  color=#000000>  <i>&nbsp;instruction</i> ; </Font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i>&nbsp; instruction_1</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;instruction_2</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;...</i> ;</font></p>
+					<p>&nbsp &nbsp	<Font face="Courier New"color=#000000> <i> &nbsp;instruction_N</i> ;</font></p>
+					<p>	<Font face="Courier New"  color=#0000FF> end;</Font>										
+					</p></div>					
+					</small></section>
+			</section>
+		<section>
+				<section>
+				<h3>le Bloc SELECT WHEN</h3>
+				<P>Ces instructions permettent de gérer la conditionnalité multiple sur une variable unique</p>
+
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> select </Font>
+						<Font face="Courier New"  color=#000000>  (<i>variable</i>) ;</Font>
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp when </Font>
+						<Font face="Courier New"color=#000000> <i>condition_1 instruction_1</i>;</font>					
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp when </Font>
+						<Font face="Courier New"color=#000000> <i>condition_2 instruction_2</i>;</font>					
+					</p>
+					<p>
+						&nbsp &nbsp (...)
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp when </Font>
+						<Font face="Courier New"color=#000000> <i>condition_n-1 instruction_n-1</i>;</font>					
+					</p>					
+					<p>
+						<Font face="Courier New"  color=#0000FF>  otherwise </Font>
+						<Font face="Courier New"  color=#000000>  instruction_n ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>  end; </Font>
+					</p></div>					
+					</small>
+				</section>
+				<section>
+					<h3>Exemple</h3>
+				<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.reclassification ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> sashelp.Class;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp select </Font>
+						<Font face="Courier New"  color=#000000>  (Sex) ;</Font>
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> ('F') cat='Female';</font>					
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> ('M') cat='Male';</font>					
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp otherwise </Font>
+						<Font face="Courier New"  color=#000000>  cat='Indefini' ; </Font>						
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> end; </Font>
+					</p>
+					</p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>				
+				
+
+				<section>
+					<h3>le Bloc SELECT WHEN</h3>
+					<p>L'instruction Otherwise est facultative</p>
+					<p>La variable définie dans l'instruction Select est facultative et les conditions peuvent dès lors être multiples</p>
+					<p>Est-ce correct ? (longeur de Cat) </p>
+					<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.reclassification ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> sashelp.Class;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp select </Font>
+						<Font face="Courier New"  color=#000000>  ;</Font>
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'F' and Age >= 15) Cat='Female'</i>;</font>					
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'F' and Age < 15) Cat='Young Female'</i>;</font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'M' and Age >= 15) Cat='Male'</i>;</font>							
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'M' and Age < 15) Cat='Young Male'</i>;</font>							
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>end; </Font>
+					</p>
+					</p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>	
+				<section>
+						<h3>le Bloc SELECT WHEN</h3>
+						<p>Dans le script précédent, on a un souci sur le longeur de Cat </p>
+						<p>Ce problème est ici résolu </p>
+						<p>&nbsp</p>
+				<div align="left">
+					<small>
+					<p>
+						<Font face="Courier New"  color=#0000FF> <b> DATA </b></Font>
+						<Font face="Courier New"  color=#000000> cours2.reclassification ; </font>	
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp set </Font>
+						<Font face="Courier New"color=#000000> sashelp.Class;</font>
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF> &nbsp select </Font>
+						<Font face="Courier New"  color=#000000>  ;</Font>
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'F' and Age < 15) Cat='Young Female'</i>;</font>	
+					</p>
+					<p>	
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'F' and Age >= 15) Cat='Female'</i>;</font>					
+					</p>
+										<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'M' and Age >= 15) Cat='Male'</i>;</font>							
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>&nbsp &nbsp when </Font>
+						<Font face="Courier New"color=#000000> (Sex = 'M' and Age < 15) Cat='Young Male'</i>;</font>							
+					</p>
+					<p>
+						<Font face="Courier New"  color=#0000FF>end; </Font>
+					</p>
+					</p>
+						<Font face="Courier New"  color=#0000FF> <b>RUN</b> </Font>
+						<Font face="Courier New"  color=#000000>  ; </Font>						
+					</p></div>					
+					</small>
+				</section>	
+			</section>
+			</section>
+				<section>
+					<h2>Calcul et création de variables</h2>
+				</section>
+			<section>
+				<section>
+					<h3>Calcul de variables</h3>
+					<p>Il n'est pas nécessaire de définir les variables en SAS</p>
+					<p>Le symbole = entraine l'affectation de valeurs à la variable</p>
+					<div class="fontcode">
+						<small>
+							<p>
+								<span class="bleuG">DATA</span>
+								nom_de_ma_librairie.nom_de_ma_table ;
+							</p>
+
+							<p class="tab1">
+							  nom_de_ma_variable = [expression valide];
+							</p>
+
+							<p>
+							<span class="bleuG">RUN</span>;					
+							</p>
+						</small>
+					</div>				
+				</section>
+				<section>
+					<h2>Exemple</h2>
+					<p>Nous souhaitons calculer l'IMC (Indice de Masse Corporelle) des étudiants<p>
+					<div class="fontcode">
+						<small>
+							<p>
+								<span class="bleuG">DATA</span>
+								cours2.Class_entiere ;
+							</p>
+							<p>
+								<span class="bleu">set</span>
+								cours2.Class_entiere ;
+							</p>
+
+							<p class="tab1">
+							  Poids = Weight * 0.454545;</p>
+							<p class="tab1">
+							  Taille = (Height * 2.54)/100;</p>
+							<p class="tab1">
+							  IMC = Poids / Taille**2;</p>
+							<p>
+							<p class="tab1">
+								Conclusion = cat('L étudiant a un IMC de ', round(IMC,0.1));
+							</p>
+
+							<span class="bleuG">RUN</span>;					
+							</p>
+						</small>
+					</div>				
+				</section>
+			</section>
+			<section>
+				<section>
+				<h2>Création de tables</h2>
+				<p>Il est possible de créer de a à z une table en programmant une étape data ainsi que les commandes Input et Cards</p>
+					<div class="fontcode">
+						<small>
+							<p>
+								<span class="bleuG">DATA</span>
+								nom_de_ma_librairie.nom_de_ma_table ;
+							</p>
+							<p class="tab1">
+								<span class="bleu">input </span>
+								 nom_de_ma_variable_car $ nom_de_ma_variable_numerique ;
+							</p>
+
+							<p class="tab1">
+							  <span class="bleu">Cards</span>;</p>
+							<p class="tab1">
+							   <span style="background:#FFFF99"> modalité_car_1 modalite_num_1 </span></p>
+							<p class="tab1">
+							  <span style="background:#FFFF99"> modalité_car_2 modalite_num_2 </span></p>
+							<p>
+							<p class="tab1">
+							  <span style="background:#FFFF99"> ... </span></p>
+							<p>
+							<p class="tab1">
+							  <span style="background:#FFFF99"> modalité_car_N-1 modalite_num_N-1 </span></p>
+							<p>
+							<p class="tab1">
+							  <span style="background:#FFFF99"> modalité_car_N modalite_num_N </span></p>
+							<p>;</p>						
+							
+							<p>	<span class="bleuG">RUN</span>;					
+							</p>
+						</small>
+					</div>
+				</section>
+				<section>
+					<h2>Exemple</h2>
+					<p>Les modalités sont séparées par des espaces " ", il est donc impossible de créer des modalités qui en sont composées</p>
+					<p>Il conviendra de modifier les " " par des "_"</p>
+					<div class="fontcode">
+						<small>
+							<p>
+								<span class="bleuG">DATA</span>
+								Cours2.nouveaux_eleves ;
+							</p>
+							<p class="tab1">
+								<span class="bleu">input </span>
+								 Name $ Sex $ Age Height Weight ;
+							</p>
+
+							<p class="tab1">
+							  <span class="bleu">Cards</span>;</p>
+							<p class="tab1">
+							   <span style="background:#FFFF99"> Jean-Charles M 21 58.645 102.786  </span>
+							</p>
+							<p class="tab1">
+							   <span style="background:#FFFF99"> Mathilde F 19 52.5 100  </span>
+							</p>							
+							<p>;</p>
+							<p>
+							<span class="bleuG">RUN</span>;					
+							</p>
+						</small>
+					</div>
+							<p>&nbsp</p>
+							<p>Les tables sont ainsi créées directement à partir des informations renseignées par l'utilisateur</p>
+				</section>	
+			</section>
+			<section>
+				<section><h2>Génération de variables aléatoires</h2>
+					<p>Il est possible de générer une table contenant un nombre fini de réalisations d'une variable aléatoire</p>
+					<p>Par exemple, afin d'obtenir un tirage de 100 réalisations de la loi normale centrée réduite, il convient d'écrire le progamme suivant :</p>
+					<div class="fontcode">
+							<small>
+								<p>
+									<span class="bleuG">DATA</span>
+									loi_normale ;
+								</p>
+								<p class="tab1">
+									<span class="bleu">Do </span>
+									 i = 1 <span class="bleu">to </span> 100 ;
+								</p>
+
+								<p class="tab1">
+								  x = rannor(0);</p>
+								<p class="tab1">
+								   <span class="bleu"> Output </span> ;  
+								</p>
+								<p class="tab1">
+								   <span class="bleu"> End  </span> ;
+								</p>							
+								<p>
+								<span class="bleuG">RUN</span>;					
+								</p>
+							</small>
+						</div>
+					<p>&nbsp</p>
+				</section>
+				<section>
+					<h2>Remarques</h2>
+					<p>Ici, rannor(0) renvoie une réalisation de la loi normale mais beaucoup d'autres lois sont disponibles sous SAS</p>
+					<p>Afin de connaitre les mots clés des lois aléatoires existantes et leur fonctionnement, l'aide SAS s'avèrera indispensable</p>
+					<p>Une liste non exhaustive est donnée dans l'introduction de ce cours</p> 
+				</section>
+				<section>
+					<h2>Remarques</h2>
+					<p>Le mot clé output s'avère dans ce cas indispensable</p>
+					<P>Sans lui SAS écraserait la valeur générée par la nouvelle valeur et ne générerait <i>in fine</i> qu'une unique valeur de x, correspondant à la dernière réalisation</p>
+	
+				</section>
+			</section>
+			<section>
+				<section><h2>Calcul de cumulés</h2>
+					<p>Le calcul de cumulés n'est pas instantané avec le logiciel SAS</p>
+					<p>Le progamme ci-dessous ne renverra que des valeurs manquantes</p>
+						<div class="fontcode">
+							<small>
+								<p>
+									<span class="bleuG">DATA</span>
+									cumul ;
+								</p>
+								<p class="tab1">
+									<span class="bleu">set</span>
+									sashelp.Class ;
+								</p>
+								<p class="tab1">
+								  cumul = cumul + 1 ; </p>
+								<span class="bleuG">RUN</span>;					
+								</p>
+							</small>
+						</div>
+					<p>&nbsp</p>
+					<p>En effet la variable cumul n'existant pas dans la table Class, l'addition entre une valeur manquante 
+					et 1 renvoie une valeur manquante</p>
+				</section>
+				<section><h2>Calcul de cumulés</h2>
+					<p>De même, en initialisant la variable Cumul à 0, le programme ne renverra pas le cumul attendu</p>
+					<p>Le progamme ci-dessous ne renverra qu'une colonne de 1</p>
+						<div class="fontcode">
+							<small>
+								<p>
+									<span class="bleuG">DATA</span>
+									cumul ;
+								</p>
+								<p class="tab1">
+									<span class="bleu">set</span>
+									sashelp.Class ;
+								</p>
+								<p class="tab1">
+								  cumul = 0 ; </p>								
+								<p class="tab1">
+								  cumul = cumul + 1 ; </p>
+								<span class="bleuG">RUN</span>;					
+								</p>
+							</small>
+						</div>
+					<p>&nbsp</p>
+					<p>En effet la variable cumul étant égale à 0, l'addition entre une valeur nulle et 1 renvoie 1 à chaque ligne de la table</p>
+					<p>Ceci est du au mode de calcul et d'implémentation des lignes dans une table SAS</p>
+				</section>
+				<section><h2>Pour aller plus loin</h2>
+					<p>Le mode de remplissage des tables SAS fonctionnent comme une suite d'ajouts de lignes indépendants les uns des autres.</p>
+					<p>Pour palier à cela, il faut une instruction qui permettra de faire le lien entre 2 lignes successives des données entrantes.</p>
+				</section>
+
+			</section>
+			<section>
+				<h2>L'instruction Retain</h2>
+				<p>Afin de calculer des cumulés avec SAS, il sera indispensable de maitriser l'instruction <span class="bleu">retain</span></p>
+					<div class="fontcode">
+							<small>
+								<p>
+									<span class="bleuG">DATA</span>
+									cumul ;
+								</p>
+								<p class="tab1">
+									<span class="bleu">set</span>
+									sashelp.Class ;
+								</p>
+								<p class="tab1">
+								  <span class="bleu">retain</span> cumul 0 ; </p>								
+								<p class="tab1">
+								  cumul = cumul + 1 ; </p>
+								<span class="bleuG">RUN</span>;					
+								</p>
+							</small>
+						</div>
+						<p>Le programme ci-dessus génère une nouvelle variable numérique nommée cumul égale au numéro de ligne de la table</p>
+						<p>Le 0 initialise la variable cumul</p>
+						<p>Le <span class="bleu">retain</span> permet à SAS de conserver en mémoire la dernière valeur de la variable cumul</p>
+			</section>
+
+
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!--                                     LES SLIDES DE BASE POUR EXEMPLES                                 -->
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>			

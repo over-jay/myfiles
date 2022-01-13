@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Mise à niveau SAS - Application 1</title>
+
+	<meta name="description" content="Cours dauphine using HTML">
+	<meta name="author" content="Pierre-Michel Becquet / Jérôme Lepagnol">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="css/reveal.min.css">
+	<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+	<link rel="stylesheet" href="css/custom.css">
+	<link rel="stylesheet" href="SAS_style.css">
+
+	<!-- For syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/beige.css">
+
+	<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+	<script>
+		if (window.location.search.match(/print-pdf/gi)) {
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'css/print/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+		}
+	</script>
+
+	<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<!-- Any section element inside of this container is displayed as a slide -->
+		<div class="slides">
+
+			<! - Title slide ->
+				<section>
+					<h1> Application 1 </h1>
+					<h3> Preparing and importing tables under SAS </h3>
+				</section>
+
+				<section>
+					<h2> Preliminary remarks </h2>
+
+					<p> An Excel file must be prepared before importing </p>
+					<p> It is extremely rare to find databases that are formatted for SAS just extracted </p>
+				</section>
+				<section>
+					<section>
+						<h2> Presentation of the file </h2>
+
+						<p> The first line of the file can contain the variable names </p>
+						<p> The names of variables in SAS have specificities that must ALWAYS be observed </p>
+					</section>
+					<section>
+						<h2> Variable names </h2>
+						<p> Variable names are <b> 32 characters maximum </b> </p>
+						<br>
+						<p> The names are composed of letters <b> not accentuated </b>, possibly of numbers and the symbol "_" </p>
+						<br>
+						<p> Any other special character should be avoided (@, space | $ £! ...) </p>
+						<br>
+						<p> Variable names <b> must never start with a number </b> </p>
+						<br>
+						<p> Variable names must be <b> unique </b> per table </p>
+					</section>
+					<section>
+						<h2> Variable names </h2>
+						<p> By default, the wizard uses the first row to define the column names </p>
+						<p> To signal the absence of variable names in the first line to SAS, two actions depending on the import mode must be
+							operated </p>
+					</section>
+					<section>
+						<h2> In the case of the wizard </h2>
+						<p> When selecting the sheet to import described in the introductory course, you must go to the
+							options
+						</p>
+						<img src="img/Options.jpg" />
+					</section>
+					<section>
+						<h2> In the case of the wizard </h2>
+						<p> Then uncheck the default option of "Column names in first row" </p>
+						<img src="img/decoche.jpg" />
+					</section>
+
+					<section>
+						<h2> In the case of the <span class="SAS_command"> proc import </span> </h2>
+						<p> In the <span class="SAS_command"> proc import </span> described in the introductory course, you should assign the value NO
+							to the GETNAMES option </p>
+						<script src="https://gist.github.com/over-jay/020d041e38876414f20820f512c31ffe.js"></script>
+					</section>
+
+					<section>
+						<h2> Variable names </h2>
+						<p> In this case the variables will be named \[(F_1, ..., F_n) \], with n the number of non-empty columns in the imported
+							file </p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2> Presentation of the file </h2>
+						<p> Each line must correspond to an individual </p>
+						<br>
+						<p> It is advisable to be vigilant on the presence of sub-totals or of total in a table, SAS will interpret it as a
+							individual to
+							full part </p>
+						<br>
+						<p> It is common to be confronted with missing observations in a database </p>
+						<br>
+						<p> SAS handles missing values ​​differently depending on whether the variable is numeric or alphanumeric </p>
+					</section>
+					<section>
+						<h2> Management of missing values ​​</h2>
+						<p> A missing numeric variable will be identified by a. </p>
+						<p> A missing alphanumeric variable will be identified by "", or "" </p>
+					</section>
+					<section>
+						<h2>WARNING</h2>
+						<p> A missing numeric variable will always be the smallest value of a numeric variable </p>
+						<p> Thus a "less than or equal" condition will always be respected by a missing value and will not always be desirable
+						</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2> Presentation of the file </h2>
+						<p> The modalities must not respect the same rules as the names of variables </p>
+						<br>
+						<p> However, they present their own rules which should be respected otherwise there will be a problem when importing </p>
+						<br>
+						<p> Most of the time, import problems are not reported by the system and are discovered after several
+							treatments
+						</p>
+						<br>
+						<p> The greatest caution should be observed because the import is a crucial step that should not be underestimated </p>
+					</section>
+					<section>
+						<h2> Format issue </h2>
+						<p> The main characteristic to be careful with is the format and more particularly the length of the
+							variables </p>
+						<p> Although a numeric variable is by default defined as a variable of size 8 (the largest possible on SAS), the
+							length of alphanumeric variables is by default defined as the length of the longest character string
+							of a
+							variable during import </p>
+						<p> This can lead to the truncation problems described in the introduction when concatenating tables or
+							change
+							of terms </p>
+					</section>
+					<section>
+						<h2> Note </h2>
+						<p> If a transposition is necessary, the modalities become variables and must respect the rules described
+							more
+							top </p>
+						<p> You should therefore avoid modalities that contain spaces or other special characters in this
+							contingency
+						</p>
+					</section>
+				</section>
+
+				<section>
+					<h2> APPLICATION 1 </h2>
+					<h4> Mastery of data import </h4>
+				</section>
+				<section>
+					<h3> Where does our file come from </h3>
+					<br>
+					<a href="https://www.insee.fr/fr/statistiques/1893220" target="_blank"> https://www.insee.fr/fr/statistiques/1893220</a>
+				</section>
+
+				<section>
+					<section>
+						<h3> Part 1 </h3>
+						<p> Either the product-interieur-brut-reg-1990-2011.xls excel file </p>
+						<p> New version: <b> PIB_1990_2015_regions_diffusion.xls </b> </p>
+						<p> Open the file (GDP in 1990-2015 tab) and </p>
+						<p> explain why the file format is not suitable for import under SAS </p>
+					</section>
+					<section>
+						<h3> Answers Part 1 </h3>
+						<ul>
+							<li> Column names can be found on line 4 </li>
+							<li> There is an empty line in line 5 </li>
+							<li> Presence of non-empty cells in lines 1, 29 and 30 </li>
+							<li> Variable names are numbers </li>
+							<li> Year and Region contain accented characters </li>
+							<li> Presence of subtotals and grand total in the table </li>
+						</ul>
+						<br> <br> We decide to correct in Excel directly
+						<p> After the correction, the product-interieur-brut-reg-1990-2015 formatted.xls file can be imported </p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Partie 2</h3>
+						<p>Définir la librairie Prelim qui servira à stocker la table à importer</p>
+						<br>
+						<script src="https://gist.github.com/over-jay/8d7a93274d0b91fd9a582be4f6ad1666.js"></script>
+					</section>
+					<section>
+						<h3> Notes Part 2 </h3>
+						<p> The log returns the following note if the program was written correctly </p>
+						<code class = "SAS_command tiny_font"> PRELIM.PIB_REG was successfully created. </code>
+						<p> The table is then stored in the Prelim library and is accessible from the Explorer tab </p>
+						<p> You should always check that the import went well by opening the database after the import </p>
+						</section>
+				</section>
+				<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+				<!--                                     LES SLIDES DE BASE POUR EXEMPLES                                 -->
+				<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+				<script src="lib/js/head.min.js"></script>
+				<script src="js/reveal.min.js"></script>
+				<script src="plugin/math/math.js"></script>
+
+				<script>
+
+					// Full list of configuration options available here:
+					// https://github.com/hakimel/reveal.js#configuration
+					Reveal.initialize({
+						controls: true,
+						progress: true,
+						history: true,
+						center: true,
+						slideNumber: true,
+
+						theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+						transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+						// Parallax scrolling
+						// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+						// parallaxBackgroundSize: '2100px 900px',
+
+						// Optional libraries used to extend on reveal.js
+						dependencies: [
+							{ src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+							{ src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+							{ src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+							{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+							{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+							{ src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } }
+						]
+					});
+
+				</script>
+
+</body>
+
+</html>

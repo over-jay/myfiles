@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Mise à niveau SAS - Introduction</title>
+
+	<meta name="description" content="Cours dauphine using HTML">
+	<meta name="author" content="Pierre-Michel Becquet / J LEPAGNOL">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="css/reveal.min.css">
+	<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+	<link rel="stylesheet" href="css/custom.css">
+	<link rel="stylesheet" href="SAS_style.css">
+
+	<!-- For syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/beige.css">
+
+	<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+
+	<script>
+
+		if (window.location.search.match(/print-pdf/gi)) {
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'css/print/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+		}
+	</script>
+
+	<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<!-- Any section element inside of this container is displayed as a slide -->
+		<div class="slides">
+
+			<!-- Slide de titre -->
+			<section>
+				<h1>Statistiques et études économiques sous SAS</h1>
+				<h3>Introduction</h3>
+			</section>
+			<!-- Présentation de l'interface -->
+			<section>
+				<h2>L'interface</h2>
+			</section>
+
+			<section>
+				<h3>L'éditeur</h3>
+				<p>
+					La fenêtre Editeur est la fenêtre dans laquelle les lignes de commandes sont insérées
+				</p>
+				<img src="img/interface_editeur.jpg" />
+			</section>
+
+			<section>
+				<h3>Le journal</h3>
+				<p style="font-size:95%;">
+					Le journal (ou Log) est la synthèse de l’exécution des instructions :
+				</p>
+				<p>
+					Messages d’erreurs, avertissements et notes
+				</p>
+				<img src="img/interface_journal.jpg" />
+			</section>
+
+			<section>
+				<h3>La sortie</h3>
+				<p>
+					La fenêtre Sortie (ou OUTPUT) contient les résultats issus d’étapes PROC
+				</p>
+				<img src="img/interface_sortie.jpg" />
+			</section>
+
+			<section>
+				<h3>Explorateur / résultats</h3>
+				<p>
+					Dans la fenêtre de gauche, deux onglets sont présents
+				</p>
+			</section>
+
+			<section>
+				<h3>Explorateur</h3>
+				<p>
+					L’onglet Explorateur donne notamment accès aux bibliothèques et à leur contenu
+				</p>
+				<img src="img/interface_explorateur.jpg" />
+			</section>
+
+			<section>
+				<h3>Résultats </h3>
+				<p>
+					L’onglet Résultats donne accès à l’ensemble des résultats générés par SAS au cours de la session de travail
+				</p>
+				<img src="img/interface_resultats.jpg" />
+			</section>
+
+			<section>
+				<h3>L'interface</h3>
+				<p>
+				</p>
+				<img src="img/interface_globale.png" />
+			</section>
+
+			<!-- Notions d eprogrammation -->
+			<section>
+				<h2>Principes de programmation</h2>
+			</section>
+
+			<section>
+				<section>
+					<h3>Interaction programme SAS avec les données-avant</h3>
+					<img src="img/orga-prog-data-1.JPG" />
+				</section>
+				<section>
+					<h3>Interaction programme SAS avec les données-pendant</h3>
+					<img src="img/orga-prog-data-2.JPG" />
+				</section>
+				<section>
+					<h3>Interaction programme SAS avec les données-après</h3>
+					<img src="img/orga-prog-data-3.JPG" />
+				</section>
+			</section>
+
+
+
+			<section>
+				<h3>Décomposition d'un programme SAS </h3>
+				<p>Un programme est une suite d’étapes SAS</p>
+				<p>Principalement de deux types d’étapes nommées</p>
+				<p>- DATA et</p>
+				<p>- PROC</p>
+			</section>
+
+			<section>
+				<h3>Décomposition d'un programme SAS</h3>
+				<p>Chaque étape est une suite d’instructions</p>
+				<p>qui peuvent être accompagnées de mots-clés</p>
+				<p>et qui se terminent par un ;</p>
+			</section>
+
+			<section>
+				<h3>Décomposition d'un programme SAS</h3>
+				<p>Les étapes se terminent par le mot clé <span class="SAS_command">RUN;</span></p>
+				<p>ou dans le cas de certaines étapes PROC le mot clé <span class="SAS_command">QUIT;</span></p>
+				<p class="comments"><span class="SAS_command">QUIT;</span> est destiné à liberer la connexion avec les objets manipulés</p>
+			</section>
+
+			<section>
+				<h3>Ecriture d'un programme SAS</h3>
+				<p>L’écriture d’un programme nécessite quelques règles élémentaires pour faciliter sa lecture et les phases de débugage</p>
+			</section>
+
+			<section>
+				<h3>Ecriture d'un programme SAS</h3>
+				<p>Il faut toujours commenter le programme</p>
+				<p>Pour insérer des commentaires, il existe deux synthaxes</p>
+				<br>
+				<p>
+					<small>
+						<code data-trim data-noescape class="SAS_comment">/*Insérer des commentaires*/</code>
+						<br>
+						<code data-trim data-noescape class="SAS_comment">*commentaire;</code>
+					</small>
+				</p>
+			</section>
+			<section>
+
+				<h3>Ecriture d'un programme SAS</h3>
+				<p>Ne pas hésiter à exécuter fréquemment le programme, en prenant les précautions nécessaires, afin de ne pas accumuler les bugs</p>
+			</section>
+
+			<section>
+				<h3>Exécution d'un programme SAS</h3>
+				<p>L’exécution d’un programme s’effectue en appuyant sur F3 ou à l’aide du bouton</p>
+				<img width="44" height="44" src="img/run.jpg">
+			</section>
+
+			<section>
+
+				<h3>Exécution d'un programme SAS</h3>
+				<p>A chaque exécution, le système complète la fenêtre Journal en générant une suite de notes, d’avertissements ou d’erreurs que nous
+					apprendrons à décrypter</p>
+			</section>
+
+			<section>
+
+				<h3>Analyse des sorties</h3>
+				<p>Lorsque des tables sont générées par le programme, il convient de toujours vérifier qu'elles correspondent à nos attentes</p>
+			</section>
+
+
+			<section>
+				<h3>Analyse des sorties</h3>
+				<p>L’onglet Sortie est alimenté dans le cas de certaines étapes</p>
+				<p>Cet onglet peut vite s’avérer trop volumineux pour être correctement interprété</p>
+				<p>Ne pas hésiter à nettoyer cet onglet en utilisant la commande Ctrl + E</p>
+			</section>
+
+			<section>
+				<section>
+					<h3>Mon 1er programme SAS : Hello World</h3>
+					<script src="https://gist.github.com/over-jay/83a7bab35742afc16ea620d444d24b05.js"></script>
+				</section>
+
+				<section>
+					<h3>A vous de jouer !</h3>
+					<img alt="IMAGE du logiciel sas lancant hello_world.sas" />
+
+					<p align="left"> <small>
+							<Font face="SAS Monospace" color=#000000>
+								4 data _null_;<br>
+								5 put "Hell" "o World!";<br>
+								6 run;<br>
+								<br>
+								Hello World!<br>
+							</font>
+						</small> </p>
+					<p align="left"> <small>
+							<Font face="SAS Monospace" color=#0000FF>
+								NOTE: DATA statement used (Total process time):<br>
+								real time 0.01 seconds<br>
+								cpu time 0.01 seconds<br>
+							</font>
+						</small> </p>
+				</section>
+
+
+			</section>
+
+
+			<!-- Gestion des bibliothèques -->
+			<section>
+				<h2>Gestion des bibliothèques</h2>
+				<p>
+					Liaison entre le programme et les stockages de bases de données
+				</p>
+				<img src="img/orga-prog-data-2.JPG" />
+			</section>
+
+			<section>
+				<h3>Introduction aux bibliothèques </h3>
+				<p>
+					Le logiciel SAS dispose d’un système de bibliothèques pour la gestion de bases de données
+				</p>
+				<p>
+					Une bibliothèque (ou librairie) consiste en un nom virtuel attribué à un répertoire physique
+				</p>
+				<img width="301" height="178" src="img/interface_explorateur_focus.jpg" />
+				<p>
+					C’est ici que vous stockerez les tables (appelées data) qui contiennent les variables en colonnes et les observations en lignes
+				</p>
+			</section>
+
+			<section>
+
+				<section>
+					<h3>Affecter une bibliothèque </h3>
+					<p>Afin d’affecter une bibliothèque, il suffit de rentrer le code ci-dessous dans la fenêtre Editeur, en respectant la syntaxe
+						suivante :</p>
+					<br>
+
+					<script src="https://gist.github.com/over-jay/d09938069e050600561c353d7e4104d3.js"></script>
+					
+					<p>Exemple</p>
+					<script src="https://gist.github.com/over-jay/7753a0e716375c122ebd31c9b085af99.js"></script>
+					<img src="img/affectation_lib.jpg" />
+				</section>
+
+				<section>
+					<h3>A vous de jouer !</h3>
+					<br><br>
+					<p align="left">
+						<Font face="SAS Monospace" color=#0000FF>Libname </font>
+						<Font face="SAS Monospace" color=#000000> exemple </font>
+						<Font face="SAS Monospace" color=#800080>'C:\votre_repertoire\data1'; </Font><br>
+					</p><br><br>
+					<p align="left"> <small>
+							<Font face="SAS Monospace" color=#000000> 7 Libname exemple 'C:\votre_repertoire\data1';<br></font>
+							<Font face="SAS Monospace" color=#0000FF> NOTE: Libref EXEMPLE was successfully assigned as follows:<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;Engine: V9<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;Physical Name: C:\votre_repertoire\data1<br>
+							</font>
+						</small> </p>
+				</section>
+			</section>
+
+			<section>
+				<h3>Désaffecter une bibliothèque </h3>
+				<p>
+					De manière symétrique, on peut désaffecter une bibliothèque en utilisant l’instruction SAS<Font face="SAS Monospace"
+						color=#0000FF>clear</font>
+
+				</p>
+				<p></p>
+
+				<p align="left">
+					Exemple </p>
+
+				<p></p>
+
+				<p align="left">
+					<small>
+						<Font face="SAS Monospace" color=#0000FF>
+							Libname
+						</font>
+
+						<Font face="SAS Monospace" color=#000000>
+							exemple
+						</font>
+
+						<Font face="SAS Monospace" color=#0000FF>
+							clear
+						</font>
+						<font color=#000000>;</font>
+					</small>
+				</p>
+
+
+
+				<img src="img/desaffectation_lib.jpg" />
+
+
+
+			</section>
+
+
+			<section>
+				<h3> Remarques </h3>
+				<p>
+					Les affectations des bibliothèques se font toujours en début de programme
+				</p>
+				<p>
+					Par défaut, la seule bibliothèque définie est une bibliothèque temporaire appelée WORK
+				</p>
+				<p>
+					La WORK est automatiquement <b><u>réinitialisée</u></b> à la fermeture des programmes SAS, et tout son contenu est dès lors
+					supprimé
+				</p>
+			</section>
+
+			<!-- Alimentation des bibliothèques / L'import de données -->
+			<section>
+				<h2>Alimentation des bibliothèques : <br>L'import de données</h2>
+			</section>
+
+			<section>
+				<h3> L'import de données </h3>
+				<p>
+					Pour importer des tables dans une bibliothèque,<br> deux solutions sont envisageables :
+				</p>
+				<p>
+					- L’assistant SAS
+				</p>
+				<p>
+					- La <span class="SAS_command"><b>PROC IMPORT</b></span>
+				</p>
+			</section>
+
+			<section>
+				<h3> L'assistant SAS </h3>
+				<p>
+					Dans l'onglet fichier\Importer données...
+				</p>
+				<img src="img/Import1.jpg" />
+
+				<small>
+					en cas de problème, résolution possible en lançant l'éxécutable AccessDatabaseEngine.exe dans :<br>
+					SAS Software Depot\products\sysreqwizard__92210__prt__xx__sp0__1\redist\ace\en
+					ou dans :<br>
+					SAS Software Depot\products\ace__99140__prt__xx__sp0__1\w32\native <br>
+					ou vérifier les versions de SAS vs Excel
+				</small>
+			</section>
+
+			<section>
+				<h3> L'assistant SAS </h3>
+				<p>
+					Sélectionner la feuille Excel préalablement préparée pour l'import
+				</p>
+				<p>
+					Puis sélectionner la librairie dans laquelle la table sera stockée sous SAS
+				</p>
+				<img src="img/Import2.jpg" />
+			</section>
+
+			<section>
+				<h3> L'assistant SAS </h3>
+				<p>
+					Il convient ensuite de donner un nom à la table importée
+				</p>
+				<p>
+					Le nom attribué devra être adapté au logiciel, il faut donc proscrire les espaces et les caractères spéciaux
+				</p>
+				<img src="img/Import3.jpg" />
+			</section>
+
+			<section>
+				<h3>Autre méthode d’import de données </h3>
+				<p>
+					Il existe également une procédure SAS qui permet d’importer directement des tables sans utiliser l’assistant
+				</p>
+
+				<p>
+					Pour cela il faut maitriser la proc import et respecter la syntaxe suivante
+				</p>
+				<br><small>
+
+					<p align="left">
+						<Font face="SAS Monospace" color=#0000FF> <b>PROC IMPORT</b>
+						</font>
+					</p>
+
+					<p align="left">
+						<Font face="SAS Monospace" color=#000000>&nbsp OUT= nom_de_la_librairie.nom_de_ma_table
+						</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp DATAFILE=</font>
+						<Font face="SAS Monospace" color=#800080> 'Chemin de mon fichier.xls'</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp DBMS=XLS REPLACE; </font>
+						<font face="SAS Monospace" color=#008000> /*Dans le cas d’un fichier xls*/ </font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp SHEET=</font>
+						<font face="SAS Monospace" color=#800080> 'nom_de_la_feuille_Excel_à_importer$' </font>
+						<font face="SAS Monospace" color=#000000>;</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp GETNAMES=YES ;</font>
+						<font face="SAS Monospace" color=#008000> /*Conserve les noms de colonnes stockés dans la première ligne du fichier Excel*/
+						</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#0000FF><b>RUN</b></font>
+						<font face="SAS Monospace" color=#000000>;</font>
+						<font face="SAS Monospace" color=#008000> /*Instruction qui exécute les instructions qui précèdent*/ </font>
+
+						<br><br><br>
+						<font face="SAS Monospace" color=#000000><i>ancienne version : </i>&nbsp DBMS=EXCEL2000 REPLACE; </font>
+					</p>
+				</small>
+
+			</section>
+
+			<section>
+				<h3>Autre méthode d’import de données </h3>
+				<p>
+					Dans l’exemple précédent, le code qu’il aurait fallu insérer dans la fenêtre Editeur aurait été le suivant:
+				</p>
+				<br><small>
+					<p align="left">
+						<Font face="SAS Monospace" color=#0000FF> <b>PROC IMPORT</b>
+						</font>
+					</p>
+
+					<p align="left">
+						<Font face="SAS Monospace" color=#000000>&nbsp OUT= EXEMPLE.MATABLE
+						</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp DATAFILE=</font>
+						<Font face="SAS Monospace" color=#800080> 'C:\SAS\mon_ficher.xls'</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp DBMS=XLS REPLACE; </font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp SHEET=</font>
+						<font face="SAS Monospace" color=#800080> 'ma_feuille$' </font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#000000>&nbsp GETNAMES=YES ;</font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#0000FF><b>RUN</b></font>
+						<font face="SAS Monospace" color=#000000>;</font>
+					</p>
+				</small>
+
+			</section>
+
+			<section>
+				<h3>Autre méthode d’import de données </h3>
+				<p>
+					De la même manière, la table aurait été définitivement stockée dans la librairie sélectionnée
+				</p>
+				<p>
+					Le journal aurait alors retourné la note suivante
+				</p>
+				<br><small>
+					<font face="SAS Monospace" color=#0000FF><b>Note: EXEMPLE.MATABLE was successfully created.</b></font>
+				</small>
+			</section>
+
+			<!-- FORMATS ET OPERATEURS -->
+			<section>
+				<h2>Formats et opérateurs</h2>
+			</section>
+
+			<section>
+				<h3>Remarques sur les formats </h3>
+				<p>
+					Les formats de variables sont cruciaux et s'avèrent être à l’origine de nombreuses erreurs de compilation
+
+				</p>
+				<p>
+					Il est important d’être vigilant aux formats des variables lors de leur création ou de leur import
+
+				</p>
+			</section>
+
+			<section>
+				<h3>Principes de définition de formats </h3>
+				<p>
+					Les formats SAS sont définis comme suit
+				</p>
+				<p>
+					< $>format< w>.< d>
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> $ </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Indique un format de type chaine de caractère </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> format </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Mot clé qui indique à SAS le format que l'on souhaite
+							attribué</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> w </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Indique la longueur totale de la variable incluant
+							espaces et caractères spéciaux</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> . </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Délimiteur entre w et d </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> d </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Indique le nombre de décimales requises dans une
+							variable numérique </TD>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h3> Principaux formats sous SAS </h3>
+				<p>
+					Les variables caractères ou alphanumériques sont identifiées par le symbole $
+				</p>
+				<p>
+					Elles ont une longueur maximale définie lors d’un import comme la longueur maximale de la modalité associée à la variable importée
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> $2. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Ab </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> $UPCASE2. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> AB</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h3> Principaux formats sous SAS </h3>
+				<p>
+					Les variables numériques sont identifiées par le nombre de chiffres qu’elles peuvent contenir et un nombre de décimales si besoin
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 5. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 12345 </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 7.2 </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 1234.56</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> NUMX7.2 </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 1234,56</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h3> Principaux formats sous SAS </h3>
+				<p>
+					Les variables dates sont les plus complexes car soumises à différentes conventions nationales
+				</p>
+				<p>
+					Il s’agit de cas particuliers de variables numériques
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> DDMMYY10. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 25/07/2014 </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> MMYYS7. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 07/2014</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> YEAR4. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 2014</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> FRADFWDX. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> 25 Juillet 2014</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> FRADFWKX. </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Vendredi 25 Juillet 2014</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Un format mal défini peut causer des erreurs lors de la compilation d’un programme
+					</p>
+					<p>
+						Cependant il peut arriver que le programme parvienne à compiler mais les erreurs de définition de formats peuvent altérer les
+						données de manière dramatique
+					</p>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Par exemple, prenons le cas d’une classe de 19 élèves telle que :
+
+						<img width="40%" height="40%" src="img/exemple1.jpg" />
+					</p>
+					<small>
+						<p align="left">
+							<Font face="SAS Monospace" color=#0000FF> <b> DATA </b></Font>
+							<Font face="SAS Monospace" color=#000000> exemple ; </font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#0000FF> &nbsp set</font>
+							<Font face="SAS Monospace" color=#000000> sashelp.class;</font>
+						</p>
+
+						<p align="left">
+							<Font face="SAS Monospace" color=#0000FF> <b>RUN</b> </Font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+					</small>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						En cours d’année, un nouvel étudiant rejoint la classe
+					</p>
+					<p>
+						Sa description est contenue dans la table nouvel_eleve telle que :
+					</p>
+					<img width="40%" height="40%" src="img/exemple2.jpg" />
+					</p>
+					<small>
+						<p align="left">
+							<Font face="SAS Monospace" color=#0000FF> <b> DATA </b></Font>
+							<Font face="SAS Monospace" color=#000000> nouvel_eleve ; </font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#000000> &nbsp name = </font>
+							<Font face="SAS Monospace" color=#800080> 'Jean-Charles'</font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#000000> &nbsp Sex = </font>
+							<Font face="SAS Monospace" color=#800080> 'M'</font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#000000> &nbsp Age = </font>
+							<Font face="SAS Monospace" color=##008080> 21 </font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#000000> &nbsp Height = </font>
+							<Font face="SAS Monospace" color=##008080> 58.645 </font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+
+						<p align="left">
+							<font face="SAS Monospace" color=#000000> &nbsp Weight = </font>
+							<Font face="SAS Monospace" color=##008080> 102.786 </font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+
+						<p align="left">
+							<Font face="SAS Monospace" color=#0000FF> <b>run</b> </Font>
+							<Font face="SAS Monospace" color=#000000> ; </Font>
+						</p>
+					</small>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						J’intègre la nouvel élève à la classe
+					</p>
+					<p>
+						<small>
+							La variable Name initialement était définie par défaut comme étant une chaine de 8 caractères. Jean-Charles est une chaine
+							de 12 caractères elle a été tronquée au niveau du 8ème caractère
+							<img width="40%" height="40%" src="img/exemple3.jpg" />
+					</p>
+
+					<p align="left">
+						<Font face="SAS Monospace" color=#0000FF> <b> DATA </b></Font>
+						<Font face="SAS Monospace" color=#000000> class ; </font>
+					</p>
+
+					<p align="left">
+						<font face="SAS Monospace" color=#0000FF> &nbsp set</font>
+						<Font face="SAS Monospace" color=#000000> exemple nouvel_eleve ;</font>
+					</p>
+
+					<p align="left">
+						<Font face="SAS Monospace" color=#0000FF> <b>RUN</b> </Font>
+						<Font face="SAS Monospace" color=#000000> ; </Font>
+					</p>
+					</small>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Je veux alors implémenter les notes à l’examen stockées dans la table note
+					</p>
+					<p>
+						<small>
+							La variable Name a cette fois était définie comme une chaine de 12 caractères maximum
+
+							<img width="40%" height="40%" src="img/exemple4.jpg" />
+					</p>
+					</small>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Selon la table de référence que je vais sélectionner, le programme va s'exécuter mais 2 types de résultats sont attendus
+					</p>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Si la table Class est prise en référence, avec name définie $7. j'obtiens :
+					</p>
+					<p>
+						<img width="40%" height="40%" src="img/exemple5.jpg" />
+					</p>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Si la table Note est prise en référence, avec name définie $12. j'obtiens :
+					</p>
+					<p>
+						<img width="40%" height="40%" src="img/exemple6.jpg" />
+					</p>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Dans le premier cas, la modalité 'Jean-Charles' n'est pas possible.
+						SAS reconnait alors 'Jean-Cha' dans les deux tables et parvient à faire le lien entre les deux individus.
+					</p>
+					<p>
+						Dans le second cas, la modalité 'Jean-Charles' est une modalité possible.
+						SAS identifie alors 2 individus, Jean-Cha présent dans la table Class, et Jean-Charles présent dans la table Note.
+					</p>
+				</section>
+
+				<section>
+
+					<h3>Introduction au risque de troncature </h3>
+					<p>
+						Bien que le programme ne génère pas d'erreur, la mauvaise attribution des formats a dupliqué des individus et généré des
+						valeurs manquantes dans le pire des cas. Dans le meilleur des deux cas, ce n'est qu'une question d'affichage.
+					</p>
+				</section>
+			</section>
+
+			<section>
+				<h3> Récapitulatif des opérateurs </h3>
+				<p>
+					Opérateurs de comparaisons
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH colspan="2" border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> LT </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000">
+							< </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Inférieur strict (less than) </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> EQ </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> = </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Egal (equal)</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> GT </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> > </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Supérieur strict (greater than)</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> LE </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000">
+							<= </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Inférieur ou egal (less or equal)</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> NE </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> ^= </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Différent (non equal) </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> GE </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> >= </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Supérieur ou egal (greater or equal) </TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h3> Récapitulatif des opérateurs </h3>
+				<p>
+					Opérateurs logiques
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH colspan="2" border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> AND </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> & </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Et </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> OR </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> ! </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Ou</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> NOT </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> ^ </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Non</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h3> Récapitulatif des opérateurs </h3>
+				<p>
+					Opérateurs arithmétiques
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH colspan="2" border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD colspan="2" border="1" style="text-align: center;border:medium solid #000000"> + </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Addition </TD>
+						</TR>
+						<TD colspan="2" border="1" style="text-align: center;border:medium solid #000000"> - </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Soustraction </TD>
+						</TR>
+						<TD colspan="2" border="1" style="text-align: center;border:medium solid #000000"> * </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Multiplication </TD>
+						</TR>
+						<TD colspan="2" border="1" style="text-align: center;border:medium solid #000000"> / </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Division </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> x <> y </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Min(x,y) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Minimum de x et y</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> x >< y </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Max(x,y) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Maximum de x et y</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+
+			<section>
+				<h3> Récapitulatif des opérateurs </h3>
+				<p>
+					Concaténation de chaines de caractères
+				</p>
+				<br><small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH width="15%" border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH width="35%" border="1" style="text-align: center;border:medium solid #000000"> Exemple </TH>
+							<TH width="50%" border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> !! ou || </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Var = x||y||z </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Concaténation simple </TD>
+						<TR>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> CATS </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Var = CATS(x,y,z) </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Concaténation en enlevant les blancs en début et
+								fin de chaine de caractère </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> CATX </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Var = CATX('-',x,y,z) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Concaténation en ajoutant un séparateur entre les
+							variables </TD>
+						</TR>
+						<TR>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> CAT </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Var = CAT(x,y,z) </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Concaténation en conservant les blancs en début et
+								fin de chaine de caractères </TD>
+						</TR>
+						<TR>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> CATT </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Var = CATT(x,y,z) </TD>
+							<TD border="1" style="text-align: center;border:medium solid #000000"> Concaténation en enlevant les blancs uniquement en
+								fin de chaines de caractères</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+
+			<section>
+				<h2>Fonctions</h2>
+			</section>
+			<section>
+				<h3> Fonctions sur chaines ce caractères </h3>
+				<p>
+					Ci-dessous sont présentées des fonctions qui prennent en arguments des chaines de caractères (ici notée x)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Length(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne la longueur de x </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Compress(x,'c') </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Enlève les caractères C de la chaine de caratères x
+						</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Repeat(x,n) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Répète n fois la chaine de caractèrex x en une seule
+							chaine de caractères</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Index(x,m) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne la place du mot m dans la chaine de caractères
+							x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Upcase(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Met x en majuscules</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Lowcase(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Met x en minuscules</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Substr(x,n,l) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Extraie de x un mot de longueur l à partir du n ième
+							caractère</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Scan(x,n,'sep') </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Extraie de x le n ième mot en considérant un certain
+							séparateur 'sep'</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Tranwd(x,y,z) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Remplace les occurences du mot y par le mot z</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions sur dates </h3>
+				<p>
+					Ci-dessous sont présentées des fonctions en relation avec les dates (ici notée d)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> mdy(m,j,a) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Crée une date de jour j, mois m et année n </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Date() </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne la date courante</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Datepart(d) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Extraie la partie de la date d</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Day(d) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne le jour de la date d</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Month(d) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne le mois de la date d</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000">Year(d)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne l'année de la date d</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Weekday(d)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne le jour de la semaine de la date d</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions mathématiques </h3>
+				<p>
+					Ci-dessous sont présentées les principales fonctions mathématiques prenant en argumant une variable numérique (ici notée x)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Floor(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la partie entière de x </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> abs(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Valeur absolue de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Sign(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie 1 si x est positif, -1 si x est négatif et 0
+							sinon</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Round(x,n) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie l'arrondi de x avec n chiffres après la virgule
+						</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Mod(x,y) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le reste de la division euclidienne de x par y
+						</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> sqrt(x)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la racine carrée de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> exp(x)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie l'exponentiel de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Log(x)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le logarithme de x</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions trigonométriques </h3>
+				<p>
+					Ci-dessous sont présentées les principales fonctions trigonométriques prenant en argumant une variable numérique (ici notée x)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Cos(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le cosinus de x </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Sin(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le sinus de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Tan(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la tangente de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Arcos(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie l'arcosinus de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Arsin(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie l'arsinus de x</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Artan(x)</TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie l'artangente de x</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions statistiques </h3>
+				<p>
+					Ci-dessous sont présentées les principales fonctions statistiques prenant en argumant une série numérique (ici notée
+					x<sub>1</sub>... x<sub>n</sub>)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> n(x<sub>1</sub>... x<sub>n</sub>) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le nombre de valeurs non manquantes de la série
+							(x<sub>1</sub>... x<sub>n</sub>) </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> nmiss(x<sub>1</sub>... x<sub>n</sub>) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie le nombre de valeurs manquantes de la série
+							x<sub>1</sub>... x<sub>n</sub></TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> mean(x<sub>1</sub>... x<sub>n</sub>) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la moyenne de la série x<sub>1</sub>...
+							x<sub>n</sub></TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Var(x<sub>1</sub>... x<sub>n</sub>) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la variance empirique de la série
+							x<sub>1</sub>... x<sub>n</sub></TD>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions aléatoires </h3>
+				<p>
+					Ci-dessous sont présentées les fonctions qui permettent de générer des nombres aléatoires de paramètres prédéfinis a (généralement
+					égal à 0)
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Rannor(a) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Loi Normale centrée réduite </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Ranuni(a) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Loi uniforme sur l'intervalle [0;1]</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Ranpoi(a,l) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Loi de poisson de parmamètre l</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Ranbin(a,n,p) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Loi binomiale de paramètres n et p</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Rantbl(a,p1,...,pn) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Loi discrète de ditribution p1,...,pn</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Fonctions particulières </h3>
+				<p>
+					Ci-dessous sont présentées deux fonctions particulièrement utiles dans SAS
+				</p>
+				<br>
+				<small>
+					<table width="100%" height="100%" border="1" style="border:medium solid #000000">
+						<TR border="1" style="border:medium solid #000000">
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Code </TH>
+							<TH border="1" style="text-align: center;border:medium solid #000000"> Signification </TH>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Lag(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne la valeur précédente de la variable x </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Lagn(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la valeur n fois précédente de la variable x
+						</TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Dif(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Retourne la différence d'ordre 1 de la variable x </TD>
+						</TR>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Difn(x) </TD>
+						<TD border="1" style="text-align: center;border:medium solid #000000"> Renvoie la différence entre x et Lagn(x)</TD>
+						</TR>
+					</table>
+				</small>
+			</section>
+			<section>
+				<h3> Quelques illustrations avant <br>de passer à l'application </h3>
+				<p> 5-concatenation.sas
+				</p>
+				<p> 6-format_num.sas
+				</p>
+				<p> 7-formatdate1.sas
+				</p>
+
+			</section>
+
+		</div>
+	</div>
+
+
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!--                                     LES SLIDES DE BASE POUR EXEMPLES                                 -->
+	<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.min.js"></script>
+
+	<script>
+
+		// Full list of configuration options available here:
+		// https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+			slideNumber: true,
+
+			theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+			transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+			// Parallax scrolling
+			// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+			// parallaxBackgroundSize: '2100px 900px',
+
+			// Optional libraries used to extend on reveal.js
+			dependencies: [
+				{ src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+				{ src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+				{ src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+				{ src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } }
+			]
+		});
+
+	</script>
+
+</body>
+
+</html>

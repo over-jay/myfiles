@@ -1,0 +1,56 @@
+proc setinit;
+run;
+
+
+PROC CONTENTS data = app2.report_mond ;
+RUN;
+
+
+
+PROC CONTENTS data = report_mond ;
+RUN;
+
+
+PROC FORMAT ;
+value $ genre
+'F' = 'Fille'
+'M' = 'Garcon';
+RUN;
+
+data app2.Classe_entiere;
+set sashelp.Class;
+run;
+
+
+data app2.Classe_format;
+set app2.Classe_entiere;
+genre = put (sex, $genre.);
+RUN;
+
+PROC FORMAT ;
+value age_tranche
+LOW - 12 = 'Moins de 13 ans'
+13 - 16 = 'De 13 à 16 ans'
+17 - HIGH = 'Plus de 16 ans';
+RUN;
+
+
+
+data app2.Classe_entiere;
+set app2.Classe_entiere;
+tranche_age_var = put (age, age_tranche.);
+RUN;
+
+
+
+proc SQL;
+create table app2.SQLTABLE as
+select
+        Name
+from
+        app2.Classe_entiere
+where
+        Name like 'A%'
+;
+quit;
+

@@ -1,0 +1,51 @@
+
+.SAS_command {
+  color: blue;
+  font-family: monospace;
+}
+.comments {
+    font-size: 0.70em !important;    
+    color:#c0392b;
+}
+
+
+.tiny_font{
+  font-size: 20px!important;
+
+}
+
+.SAS_comment{
+    color:#008000;
+    font-size: small;
+}
+
+.left{
+  text-align: left;
+}
+.center{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+.my_td {
+  border:1px solid black!important;
+  text-align: center!important;
+  vertical-align: middle!important;
+}
+.my_tr {
+  text-align: center!important;
+  vertical-align: middle!important;
+}
+.my_th {
+  border:1px solid black!important;
+  text-align: center!important;
+  vertical-align: middle!important;
+}
+
+.my_table{
+  font-size: 25px!important;
+  border: 3px double black!important;
+}
+

@@ -1,0 +1,27 @@
+
+.reveal .fontcode {
+ 	font-family: "Courier New";
+ 	text-align:left;
+ 	margin-top:60px;
+}
+
+.reveal .bleu {
+	color:#0000FF;
+}
+.reveal .bleuG {
+	color:#0000FF;
+	font-weight: bold;
+}
+.reveal .bleuForm {
+	color:#008080;
+}
+.reveal .tab1 {
+	margin-left: 25px;
+}
+.reveal .tab2 {
+	margin-left: 50px;
+
+}
+.reveal .violet {
+	color:#800080;
+}

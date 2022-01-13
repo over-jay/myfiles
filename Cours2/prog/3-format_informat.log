@@ -1,0 +1,105 @@
+1                                                          Le Système SAS                            23:22 Sunday, February 21, 2021
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITE DE PARIS DAUPHINE WINDOWS 64 BITS, Site 70099297.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/OR 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           0.90 seconds
+      cpu time            0.60 seconds
+      
+1          data new;
+2          input jdate: DDMMYY10. ldate: date9.  mdate : monyy7.  ;/*lecture */
+3          format jdate DDMMYY10. ldate worddate18. mdate ddmmyy10. ; /* presentation*/
+4          cards;
+
+NOTE: The data set WORK.NEW has 1 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+6          run;
+7          
+8          data new;
+9          set new;
+10         format dtdate datetime18.;
+11         dtdate=dhms(jdate,0,0,0);
+12         run;
+
+NOTE: There were 1 observations read from the data set WORK.NEW.
+NOTE: The data set WORK.NEW has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+13         
+14         proc print new;
+                      ___
+                      1
+WARNING 1-322: Assuming the symbol N was misspelled as new.
+2                                                      Le Système SAS                         23:22 Sunday, February 21, 2021
+
+15         run;
+
+NOTE: There were 1 observations read from the data set WORK.NEW.
+NOTE: The PROCEDURE PRINT printed page 1.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.07 seconds
+      
+
+16         
+17         data amount;
+18         input nombre: best8. salaire comma8. quantity dollar10.;
+19         format nombre salaire  quantity dollar12.4;
+20         cards;
+
+NOTE: The data set WORK.AMOUNT has 2 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+23         ;
+24         run;
+25         proc print;
+26         run;
+
+NOTE: There were 2 observations read from the data set WORK.AMOUNT.
+NOTE: The PROCEDURE PRINT printed page 2.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+27         
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           1.42 seconds
+      cpu time            0.76 seconds
+      

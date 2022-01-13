@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Mise à niveau SAS - Application 1</title>
+
+		<meta name="description" content="Cours dauphine using HTML">
+		<meta name="author" content="Pierre-Michel Becquet / Jérôme Lepagnol">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/beige.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				
+				<!-- Slide de titre -->
+				<section>
+					<h1>Application 1</h1>
+					<h3>La préparation et l'import de tables sous SAS</h3>
+				</section>
+
+				<section><h2>Remarques préliminaires</h2>
+
+					<p>Un fichier Excel doit être préparé en amont de l'import</p>
+					<p>Il est extrêmement rare de trouver des bases de données qui soient formatées pour SAS à peine extraites</p>
+				</section>
+			<section>
+				<section><h2>La présentation du fichier</h2>
+
+					<p>La première ligne du fichier peut contenir les noms de variables</p>
+					<p>Les noms de variables sous SAS ont des spécificités qu'il faudra TOUJOURS respecter</p>
+				</section>
+				<section>
+					<h2>Les noms de variables</h2>
+					<p>Les noms de variables comprennent <b>32 caractères maximum</b></p>
+					<p>&nbsp</p>
+					<p>Les noms sont composés de lettres <b>non accentuées</b>, éventuellement de chiffres et du symbole "_"</p>
+					<p>&nbsp</p>
+					<p>Tout autre caractère spécial est à proscrire (@, espace | $ £ ! ...)</p>
+					<p>&nbsp</p>
+					<p>Les noms de variables <b>ne doivent jamais commencer par un chiffre</b></p>
+					<p>&nbsp</p>
+					<p>Les noms de variables doivent être <b>uniques</b> par table</p> 
+				</section>
+				<section>
+					<h2>Les noms de variables</h2>
+					<p>Par défaut, l'assistant utilise la première ligne pour définir les noms de colonnes </p>
+					<p>Pour signaler l'absence de noms de variables dans la première ligne à SAS, deux actions selon le mode d'import doivent être opérées</p>
+				</section>
+				<section>
+					<h2>Dans le cas de l'assistant</h2>
+					<p>Au moment de l'étape de sélection de la feuille à importer décrite dans le cours d'introduction, il faut aller dans les options</p>
+					<img src="img/options.jpg"/>
+				</section>
+				<section>
+					<h2>Dans le cas de l'assistant</h2>
+					<p>Puis décocher l'option par défaut de "Noms des colonnes en première ligne"</p>
+					<img src="img/decoche.jpg"/>
+				</section>
+				<section>
+					<h2>Dans le cas de la <span class="bleuG">proc import</span></h2>
+					<p>Dans la <span class="bleuG">proc import</span> décrite dans le cours d'introduction il conviendra d'attribuer la valeur NO à l'option GETNAMES </p>
+					<div class="fontcode">
+						<small>
+							<p>
+								<span class="bleuG">proc import</span>
+							</p>
+							<p>...</p>
+							<p>
+							&nbsp GETNAMES = NO ;
+							</p>
+							<p>...</p>
+							<p>
+								<span class="bleuG">RUN</span>;			
+							</p>
+						</small>
+					</div>				
+				</section>
+				<section>
+					<h2>Les noms de variables</h2>
+					<p>Dans ce cas les variables seront nommées (F1, ... , Fn), avec n le nombre de colonnes non vides dans le fichier importé</p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>La présentation du fichier</h2>
+					<p>Chaque ligne doit correspondre à un individu</p>
+					<p>&nbsp</p>
+					<p>Il convient d'être vigilant sur la présence de sous totaux ou de total dans un tableau, SAS l'interprêtera comme un individu à part entière</p> 
+					<p>&nbsp</p>
+					<p>Il est fréquent d'être confronté à des observations manquantes dans une base de données</p>
+					<p>&nbsp</p>
+					<p>SAS gère les valeurs manquantes différemment selon que la variable soit numérique ou alphanumérique</p> 
+				</section>
+				<section>
+					<h2>Gestion des valeurs manquantes</h2>
+					<p>Une variable numérique manquante sera identifiée par un . </p>
+					<p>Une variable alphanumérique manquante sera identifiée par "", ou " "</p>
+				</section>
+				<section>
+					<h2>ATTENTION</h2>
+					<p>Une variable numérique manquante sera toujours la plus petite valeur d'une variable numérique</p>
+					<p>Ainsi une condition "inférieur ou égal" sera toujours respectée par une valeur manquante et ne sera pas toujours désirable</p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>La présentation du fichier</h2>
+					<p>Les modalités ne doivent pas respecter les même règles que les noms de variables</p>
+					<p>&nbsp</p>
+					<p>Cependant elles présentent leurs propres règles qu'il conviendra de respecter sous peine de problème lors de l'import</p>
+					<p>&nbsp</p>
+					<p>Les plupart du temps, les problèmes d'import ne sont pas signalés par le système et sont découverts après plusieurs traitements</p>
+					<p>&nbsp</p>
+					<p>La plus grande prudence est à observer car l'import est une étape cruciale à ne pas sous estimer</p>
+				</section>
+				<section><h2>Problématique des formats</h2>
+					<p>La principale caractéristique sur laquelle il faudra être prudent est le format et plus particulièrement la longueur des variables</p>
+					<p>Bien qu'une variable numérique soit par défaut définie comme une variable de taille 8 (la plus grande possible sur SAS), la longueur des variables alphanumériques est par défaut définie comme la longueur de la plus longue chaine de caractère d'une variable lors de l'import</p>
+					<p>Cela peut mener à des problèmes de troncatures décrits dans l'introduction en cas de concaténation de tables ou de modification de modalités</p> 
+				</section>
+				<section>
+					<h2>Remarque</h2>
+					<p>Si une transposition est nécessaire, les modalités deviennent des variables et se doivent de respecter les règles décrites plus haut</p>
+					<p>Il convient dès lors d'éviter les modalités qui contiennent des espaces ou autres caractères spéciaux dans cette éventualité</p>
+				</section>				
+			</section>
+				<section>
+					<h2>APPLICATION 1</h2>
+					<h4>Maitrise de l'import de données</h4>
+				</section>
+				<section>
+					<h3>D'ou vient notre fichier</h3>
+					<br>
+					<a href="https://www.insee.fr/fr/statistiques/1893220" target="_blank" > https://www.insee.fr/fr/statistiques/1893220</a>
+				</section>
+
+			<section>
+				<section>
+					<h3>Partie 1</h3>
+					<p>Soit le fichier excel produit-interieur-brut-reg-1990-2011.xls</p>
+					<p>Nouvelle version :  <b>PIB_1990_2015_regions_diffusion.xls</b></p>
+					<p>Ouvrir le fichier (onglet PIB en valeur 1990-2015) et </p>
+					<p>expliquer en quoi le format du fichier ne convient pas à un import sous SAS</p>
+				</section>
+				<section>
+					<h3>Réponses Partie 1</h3>
+					<ul>
+						<li>Les noms de colonnes se trouvent à la ligne 4</li>
+						<li>Une ligne vide est présente à la ligne 5</li>
+						<li>Présence de cellules non vides en ligne 1, 29 et 30</li>
+						<li>Les noms de variables sont des chiffres</li>
+						<li>Année et Région contiennent des caractères accentués</li>
+						<li>Présence de sous-totaux et total général dans le tableau</li>
+					</ul>
+					<br> <br> On décide de corriger dans Excel directement
+					<p>A l'issue de la correction le fichier produit-interieur-brut-reg-1990-2015 formaté.xls peut être importé</p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h3>Partie 2</h3>
+					<p>Définir la librairie Prelim qui servira à stocker la table à importer</p>
+					<p>&nbsp</p>
+					<div class="fontcode">
+						<small>
+							<p><span class="bleu">Libname</span> Prelim <span class="violet">'C:\...\SAS FILES'</span>;</p>
+							<p><span class="bleuG">PROC IMPORT</span></p>
+							<p>&nbsp OUT = Prelim.PIB_REG</p>
+							<p>&nbsp DATAFILE = <span class="violet">'C:\...\produit-interieur-brut-reg-1990-2015 formaté.xls'</span></p>
+							<p>&nbsp DBMS = XLS REPLACE;</p>
+							<p>SHEET = <span class="violet">'PIB en valeur 1990-2011$'</span>;</p>
+							<p>GETNAMES = YES;</p>
+							<p><span class="bleuG">RUN;</span></p>
+						</small>
+					</div>
+				</section>
+				<section>
+					<h3>Remarques Partie 2</h3>
+					<p>Le journal renvoie la note suivante si le programme a été correctement rédigé</p>
+					<div class="fontcode">
+						<small>
+							<span class="bleuG">PRELIM.PIB_REG was successfully created.</span>
+						</small>
+					</div>
+					<p>La table est alors stockée dans la librairie Prelim et est accessible depuis l'onglet Explorateur</p>
+					<p>Il convient de toujours vérifier que l'import s'est bien passé en ouvrant la base de données après l'import</p>
+				</section>
+			</section>
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!--                                     LES SLIDES DE BASE POUR EXEMPLES                                 -->
+<!-- //////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>			
