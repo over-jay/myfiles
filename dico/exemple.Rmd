@@ -1,0 +1,807 @@
+---
+title: "Dico Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+  orientation: columns
+vertical_layout: fill
+runtime: shiny
+---
+  
+```{r setup, include=FALSE}
+  
+library(flexdashboard)
+library(binovisualfields)
+library(shiny)
+library(dplyr)
+library(plotly)
+library(summarytools)
+library(kableExtra)
+library(ngram)
+library(arsenal)
+library(stringr)
+library (ggplot2)
+library(multimode)
+# install.packages("sqldf")
+library("sqldf")
+library(tidyverse)
+library(htmltools)
+library(lubridate)
+Sys.setenv(JAVA_HOME="C:/Program Files/Java/jre1.8.0_251/") 
+  library(rJava )
+  library("xlsx")
+  library(readxl)
+library(glue)
+
+  path<-"C:\\Users\\A311009\\OneDrive - GROUP DIGITAL WORKPLACE\\D_Drive_A311009\\GDO\\99-EXTRACT"
+  setwd(path)
+
+ options(shiny.maxRequestSize = 30*1024^2)
+  
+gris <- colorRampPalette(c("#E6E6E6","#BCBCBC")) #gris
+bleu <- colorRampPalette(c("#D3F0FF","#D3D3FF")) #bleu
+#bleu(6)[1]
+
+  
+histowc<- function(toto, rm1=FALSE, title = "Histogramme")
+  {
+  titi<-sapply(toto, wordcount, sep = " ")
+  moy<- round(mean(titi, na.rm = T), 2)
+  maxi<<- round(max(titi, na.rm = T), 2)
+  mini<<- round(min(titi, na.rm = T), 2)
+  isNA <<- sum(is.na(toto))
+  nonNA <- sum(!is.na(toto))
+  all <- isNA + nonNA
+  titi<-titi[!is.na(titi) & !is.na(toto)]
+  titi<-titi[(titi!=0)]
+  nb1 <<- sum(titi==1)
+  nb_court<<-sum(titi<5 & titi>1)
+  nb_ok<<- sum(titi>4 & titi<11)
+  nb_long <<-sum(titi>10)
+  
+  #print(summary(titi))
+  if (rm1==TRUE) { 
+    titi<-titi[(titi!=1)]
+  }
+  
+  h<-hist(titi, main = paste (title,"\n", all, "données dont ", nonNA ,"non vides et",isNA, " vides") , breaks = 100,  
+          xlab=paste("Nombre de Mots :\n minimum:",mini,"   ; moyenne:",moy, "   ; maximum:",maxi,"  ; dont 1 seul mot=",nb1) )
+
+  x<-titi
+  xfit<-seq(min(x),max(x),length=100)
+  yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+  yfit <- yfit*diff(h$mids[1:2])*length(x)
+ # lines(xfit, yfit, col="green", lwd=2)
+  
+      }
+
+histolt <- function(toto, title = "Histogramme"){
+titi<-nchar(toto)
+moy<- round(mean(titi, na.rm = T), 2)
+mini<- round(min(titi, na.rm = T), 2)
+maxi<- round(max(titi, na.rm = T), 2)
+isNA <- sum(is.na(titi))
+nonNA <- sum(!is.na(titi))
+all <- isNA + nonNA
+  nb1 <- sum(titi==1)
+  nb2 <- sum(titi==2)
+#print(summary(titi))
+  #barplot(titi)
+h<-hist(titi, main = paste (title,"\n", all, "données dont ", nonNA ,"non vides et",isNA, " vides") , breaks = 100 , 
+        xlab=paste("Nombre de lettres:\n minimum:",mini,"   ; moyenne:",moy, "; maximum:",maxi," ; 1 lettre:",nb1, " ; 2 lettres:",nb2))
+                   
+x<-titi[!is.na(titi)]
+xfit<-seq(min(x),max(x),length=100)
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+# lines(xfit, yfit, col="blue", lwd=2) 
+
+}
+
+datedens<-function(date.x, text){
+#date.x <-as.Date("1970-01-01")
+# date.x<- date.o
+# date.x <- lubridate::ymd_hms(date.x)
+# date.x <- as.Date(date.x)    
+
+by_month <- function(x,n=1){
+  seq(min(x,na.rm=T),max(x,na.rm=T),by=paste0(n," months"))
+}
+# x<-substr(date.x, 1,10)
+# x<- as.Date(x)
+# x<- as.numeric(x, as.Date("1970-01-01")  , units="days")
+# modes <- locmodes(x, mod0 = 1)
+# plot(modes)
+# at<-axTicks(1)
+# axis(3,at,as.Date(at, origin=as.Date("1970-01-01"), units = "days"))
+# text<-as.Date(modes$locations,origin=as.Date("1970-01-01"), units = "days")
+# mtext(paste("MODE", text), side=3 )
+#summary(date.x)
+#hist(date.x, breaks = 80)
+
+dfx<-as.data.frame(date.x)
+if (sum(!is.na(dfx$date.x))>0)
+{ggplot(dfx, aes(x=date.x)) +
+    geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+                   binwidth=30,
+                   colour="black", fill="white") +
+scale_x_date(labels = scales::date_format("%Y-%b"),
+               breaks = by_month(dfx$date.x,2)) + 
+      xlab(text) +
+  theme(axis.text.x = element_text(angle=90))+
+      geom_density(alpha=.3, fill="#32CD32")
+}
+
+}
+
+
+xls_export = FALSE
+compute_all = TRUE
+reload= TRUE
+
+transcoservice <-c("Service Business Data Designer", 	"SDD",
+                   "CPLE/DTO - CPLE/DTO (43989SKR)",	"CPLE",
+                   "DFIN/BDF/RDM - DFIN/BDF/RDM (9974SKR)",	"BDDF",
+                   "DFIN/BDF/RDM/VDF - DFIN/BDF/RDM/VDF (10400SKR)",	"BDDF",
+                   "DFIN/DTO/ETF - DFIN/DTO/ETF (43506SKR)",	"DFIN",
+                   "DGLE/PIC - DGLE/PIC (38415SKR)",	"DGLE/PIC",
+                   "GBSU/DAT/DMO - DMO (111610SKR)",	"GBSU",
+                   "GBSU/DAT/DMO (0) - GBSU/DAT/DMO (0) (102373SKR)",	"GBSU",
+                   "GSCRO/CPL/DTO - GSCRO/CPL/DTO (214452SKR)",	"CPLE",
+                   "HRCO/DTS - HRCO/DTS (191556SKR)",	"HRCO",
+                   "HRCO/PRO/ISM/DEF - HRCO/PRO/ISM/DEF (16979SKR)",	"HRCO",
+                   "ITIM/PRF/DIR",	"RESG/GTS",
+                   "RESG/ACH/DEF - RESG/ACH/DEF (14236SKR)",	"RESG/ACH",
+                   "RESG/IMM/SEG/ORD - RESG/IMM/SEG/ORD (38527SKR)",	"RESG/IMM",
+                   "RESG/IMM/TDD/TDD - RESG/IMM/TDD/TDD (226792SKR)",	"RESG/IMM",
+                   "RESG/SGT/ETK - RESG/SGT/ETK (62193SKR)",	"RESG/SGT",
+                   "RESG/TPS/API - RESG/TPS/API (9815SKR)",	"RESG/TPS/API",
+                   "RESG/TPS/GDO - RESG/TPS/GDO (9836SKR)",	"RESG/TPS/GDO",
+                   "RISQ/DTO - RISQ/DTO (9500SKR)", "RISQ/DTO",
+                   "RISQ/PRO/HSM - RISQ/PRO/HSM (125445SKR)",	"RISQ/PRO",
+                   "RISQ/RMA/MMG/DDO - RISQ/RMA/MMG/DDO (72723SKR)",	"RISQ/RMA",
+                   "SEGL/CAO/MAP",	"SEGL",
+                   "SEGL/CAO/MAP - SEGL/CAO/MAP (9789SKR)",	"SEGL",
+                   "SGEBS/CPLE/DTO - SGEBS/CPLE/DTO (163046SKR)",	"CPLE",
+                   "AFMO/BAN/SGA",	"OTHER", 
+                   "Accounting Financial Systems",	"OTHER",
+                   "BDDF/FRF/FAE - BDDF/FRF/FAE (9724SKR)",	"FRANFINANCE",
+                   "COOS/DPM",	"GBSU",
+                   "HRCO/PRO/SOL - HRCO/PRO/SOL (9860SKR)",	"HRCO",
+                   "IBFS/EURO/CGI - CGI (368SKR)",	"CGI",
+                   "ITIM/DSR/DMG/VDF - ITIM/DSR/DMG/VDF (153270SKR)",	"GTS",
+                   "RESG/CFT/ARC/VDF - RESG/CFT/ARC/VDF (51528SKR)",	"GTS",
+                   "RESG/GTS/TSI/GIS/VDF",	"GTS",
+                   "GSCI/GBS/DAT/DQT - DQT (219315SKR)", "GBSU",
+                   "GSCRO/DOM/COO/DTO - GSCRO/DOM/COO/DTO (214354SKR)","DFIN",
+                   "RESG/GTS/OPM/RQD/VDF - RESG/GTS/OPM/RQD/VDF (205858SKR)","GTS",
+                   "Référence des UO pour les populations utilisatrices::ALDA - ALDA (314SKR)",	"OTHER",
+                   "Référence des UO pour les populations utilisatrices::FRANFINANCE - FRANFINANCE (94454SKR)",	"FRANFINANCE",
+                   "REF",  "RESG/TPS/GDO/REF" ,
+                   "GOV",  "RESG/TPS/GDO/GOV" ,
+                   "PROT" ,"RESG/TPS/GDO/PROT" 
+) 
+
+dim(transcoservice)<- c( 2,length(transcoservice)/2  )
+transcoservice<-t(transcoservice)
+transcoservice<-as.data.frame(transcoservice)
+colnames (transcoservice) <- transcoservice[1,]
+transcoservice<-transcoservice [-1,]
+colnames(transcoservice)[2]<-"SDD"
+transcoservice[dim(transcoservice)[1]+1,]<- c('*', 'All')
+DMO<-transcoservice[order(transcoservice$SDD),"SDD"]
+
+colfunc <- colorRampPalette(c("#E6E6E6","#BCBCBC")) #gris
+#colfunc(6)[1]
+bleu <- colorRampPalette(c("#D3F0FF","#D3D3FF")) #bleu
+
+```
+
+
+
+
+0- Select data  {data-orientation=column}
+=====================================  
+
+Column {}
+-------------------------------------
+```{r}
+
+fileInput(inputId = "filedata",
+        label = "Upload data. Choose csv file",
+        accept = c(".xlsx")      )
+
+selectInput(inputId = "selectedDMO",
+        label = "Select DMO",
+        choices =DMO      )
+
+checkboxInput("Genfile", "Generate for all DMO", FALSE)
+
+
+renderText({
+    # if (   is.null(data())    ) {
+    #   return(NULL)
+    # }
+    # AddFilter data 
+    if (input$selectedDMO != "All") 
+      {
+      ({ input$selectedDMO})
+      } 
+    else  
+    {    
+     ({ "not filtered" })
+    }
+  })
+
+#selectInput(inputId="categorical_variable", label = "Select Categorical Variable:", choices = Categorical.Variables, selected = Categorical.Variables[1])
+#selectInput(inputId="numeric_variable", label = "Select Numeric Variable:", choices = Numeric.Variables, selected = Numeric.Variables[1])
+```
+
+```{r Prepare data}
+data <- reactive({
+    req(input$filedata)
+    dico<-read_excel(input$filedata$datapath, sheet = 1,     guess_max = 4000)
+    
+          # preparation des variables 
+      dico$portee<-as.vector(dico$Portée) 
+      #levels(dico$portee)
+      dico$portee[is.na(dico$Portée)]<-"NA" 
+      dico$portee<-recode_factor(dico$portee , "Groupe"= "Groupe" ,    "Privative banque d'investissement"= "SGCIB"  , 
+                                   "Privative Banque et financements à l'international" = "IBFS" ,   "Privative Banque de réseau France (SG)"=  "RBDF" )
+      
+      
+      dico$`Statut de validation`[is.na(dico$`Statut de validation`)]<-"NA"
+      #unique(dico$`Statut de validation`)
+      #table(dico$status_val)
+      dico$status_val <-recode_factor(dico$`Statut de validation`, 
+                                      "Non validé"  = "No Valid", 
+                                      "NA"="NA",   
+                                      "Validé par le data designer"  = "Valid DD", 
+                                      "Validé par le data owner" = "Valid DO")
+      dico$`Statut de diffusion`[is.na(dico$`Statut de diffusion`)]<-"NA"
+      dico$statut_dif<- dico$`Statut de diffusion`
+      
+      
+      dico$Obsolète[is.na(dico$Obsolète)]<-"NA"   
+      dico$Obsolète <-recode_factor(dico$Obsolète,   
+                                      "Oui"  = "Obsolète", 
+                                      "NA"="NA",   
+                                      "Non" = "Non Obsolète")
+
+      
+      dico$Nature <- ordered (dico$Nature, levels = c("Donnée métier", "Objet métier",  "Concept" ))
+    
+    # prepare DATA that is read
+    dico_all_sdd<-sqldf("select A.* , B.SDD from dico A left join  transcoservice B 
+                      on  A.`Service Business Data Designer` = B.`Service Business Data Designer` ") 
+    #subspit de GDO
+    dico_all_sdd[dico_all_sdd$SDD == "RESG/TPS/GDO" & !is.na (dico_all_sdd$SDD) & (dico_all_sdd$`Nom Business Data Designer` == "PREVOST Madeleine"),]$SDD<-  "RESG/TPS/GDO/REF" 
+    dico_all_sdd[dico_all_sdd$SDD == "RESG/TPS/GDO" & !is.na (dico_all_sdd$SDD) &  dico_all_sdd$`Nom Business Data Designer` == "BOUZNIR Soufia",]$SDD <-  "RESG/TPS/GDO/GOV" 
+    dico_all_sdd[dico_all_sdd$SDD == "RESG/TPS/GDO" & !is.na (dico_all_sdd$SDD) &  dico_all_sdd$`Nom Business Data Designer` == "TEMIM David",]$SDD <-  "RESG/TPS/GDO/PROT" 
+    
+    dico_all_sdd<<-dico_all_sdd
+    return(dico_all_sdd)
+      })
+
+dataCDCP <-reactive({
+    dico_all_sdd<-data()
+    dfcdcp<-as.data.frame (cbind(dico_all_sdd$`Concept ADD` ,dico_all_sdd$`Identifiant technique`, dico_all_sdd$`Catégorie de donnée à caractère prioritaire`))
+    colnames(dfcdcp)[1]<-"Concept ADD"
+    colnames(dfcdcp)[2]<-"Identifiant technique"
+    colnames(dfcdcp)[3]<-"CDCP"
+    dfcdcp2<-dfcdcp %>% separate_rows(CDCP,sep=';')
+    dfcdcp2$CDCP[is.na(dfcdcp2$CDCP)]<-"NA"
+    return (dfcdcp2)
+    })
+
+dataf <- reactive({
+   dico_all<-data()
+   if (input$selectedDMO != "All") 
+   {
+     datafiltre <- dico_all[dico_all$SDD == input$selectedDMO, ]
+   } 
+   else  
+   {    
+     datafiltre <- dico_all[, ]
+   }
+       return(datafiltre)
+   })
+  
+
+datafgv <- reactive({
+    dicof <- dataf()
+    dico_filtre<- sqldf("select * from dicof where Portée = 'Groupe' and `Statut de validation` <> 'NA' and  `Statut de validation` <> 'Non validé'") 
+    return(dico_filtre)
+  })
+
+datafgvno <- reactive({
+    dicofgv <- datafgv()
+    dico_filtre<- sqldf("select * from dicofgv where Obsolète ='Non Obsolète'") 
+    return(dico_filtre)
+  })
+
+datafgvnod <- reactive({
+    dicofgvno <- datafgvno()
+    dico_filtre<- sqldf("select * from dicofgvno where `Statut de diffusion` = 'Oui'") 
+    return(dico_filtre)
+  })
+
+
+datafgvnond<- reactive({
+    dicofgvno <- datafgvno()
+    dico_filtre<- sqldf("select * from dicofgvno where `Statut de diffusion` = 'Non'") 
+    return(dico_filtre)
+  })
+
+datafgvob<- reactive({
+    dicofgv <- datafgv()
+    dico_filtre<- sqldf("select * from dicofgv where Obsolète ='Obsolète'") 
+    return(dico_filtre)
+  })
+
+dicodifval<- reactive({ 
+        dico <- dataf()
+        dico_difval <- as.data.frame.matrix(addmargins(table(dico$`Statut de diffusion`, dico$`Statut de validation`,useNA = "always")))
+      return (dico_difval)
+              })
+
+dicodifobs <- reactive({ 
+        dico <- dataf()
+        dico_difval <- as.data.frame.matrix(addmargins(table(dico$`Statut de diffusion`, dico$Obsolète,useNA = "always")))
+      return (dico_difval)
+              })
+
+
+PADIFVAL <-reactive({ 
+    dico <- dataf()
+    df<-table(dico$`Statut de diffusion`, dico$`Statut de validation`)
+    df2<-as.data.frame(df)
+    filtre_dif <- (df2$Var1=="Oui")
+    filtre_val <- (df2$Var2 %in% c("Validé par le data designer", "Validé par le data owner"))
+    VD  <- sum(0, df2[ filtre_dif &  filtre_val ,]$Freq, na.rm = TRUE)
+    NVD <- sum(0, df2[ filtre_dif & !filtre_val ,]$Freq, na.rm = TRUE)
+    VND <- sum(0, df2[!filtre_dif &  filtre_val ,]$Freq, na.rm = TRUE)
+    NVND <-sum(0, df2[!filtre_dif & !filtre_val ,]$Freq, na.rm = TRUE)
+    return (c(NVND , VND,NVD,VD))
+})
+
+PADIFOBS <-reactive({ 
+    dico <- dataf()
+    df<-table(dico$`Statut de diffusion`, dico$Obsolète)  
+    OD<-df["Oui", "Obsolète" ] 
+    OND<-df["Non", "Obsolète" ] 
+    NOND<-df["Non", "Non Obsolète" ] 
+    NOD<-df["Oui", "Non Obsolète" ] 
+    return (c(OD , OND , NOND , NOD) )
+})
+
+
+
+```
+
+
+1- Avant filtre données groupe valides (DGV) {data-orientation=rows}
+=====================================  
+Row {data-height=100}
+-------------------------------------
+### scope
+```{r}
+renderValueBox({
+  scope<-input$selectedDMO
+  valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
+})
+
+
+```
+
+### NBRE DONNEES ALL
+```{r}
+renderValueBox({
+    dataset <- dataf()
+    #dataf <- dataf()
+   nbrdata<-dim(dataset)[1]
+  valueBox(nbrdata, caption = HTML("<b><u>Assiette pour cet écran: Nombre de Données total</b></u>" ) ,color=bleu(8)[2], icon = "fa-database")
+      })
+   
+```
+
+### NBRE DONNEES GRPE Valide
+```{r}
+renderValueBox({
+  dataset <- datafgv()
+  nbrdatafiltre<-dim(dataset)[1]
+  valueBox(nbrdatafiltre, caption = "Parmi lesquelles : Données 'groupe' valides", color=bleu(8)[4], icon = "fa-award")
+    })
+```
+
+### NBRE DONNEES GRPE Valide non obsolète 
+```{r}
+renderValueBox({
+  dataset<-datafgvno()
+   nbrdatafiltreno<-dim(dataset)[1]
+  valueBox(nbrdatafiltreno, caption = "Parmi lesquelles : Données 'groupe' valides non obsolètes", color=bleu(8)[5], icon = "fa-sun")
+})
+```
+
+### NBRE DONNEES GRPE Valide NO diffusée 
+```{r}
+renderValueBox({
+   dataset<-datafgvnod()
+   nbrdatafiltrenod<-dim(dataset)[1]
+  valueBox(nbrdatafiltrenod, caption = "et Parmi lesquelles : Données 'groupe' valides non obsolètes diffusées", color=bleu(8)[6], icon = "fa-signal")
+})
+```
+
+### NBRE DONNEES GRPE Valide NO et NON diffusée 
+```{r}
+renderValueBox({
+  dataset<-datafgvnond()
+  nbrdatafiltrenond<-dim(dataset)[1]
+    valueBox(nbrdatafiltrenond, caption = "et Parmi lesquelles : Données 'groupe' valides non obsolètes non diffusées", color = bleu(8)[7], icon = "fa-deaf")
+})
+```
+
+
+### NBRE DONNEES GRPE Valide obsolète 
+```{r}
+renderValueBox({
+  dataset<-datafgvob()
+  nbrdatafiltreob<-dim(dataset)[1]
+  valueBox(nbrdatafiltreob, caption = "et Parmi lesquelles : Données 'groupe' valides obsolètes", color=bleu(8)[8], icon = "fa-trash")
+})
+```
+
+
+
+Row {data-height=150}
+-------------------------------------
+### Diffusion et validation des données
+```{r}
+renderTable({
+  dicodifval()
+   }, rownames = TRUE)
+```
+
+### Points d'attention sur diffusion et validation
+```{r}
+ renderUI ({
+padifval<-PADIFVAL()
+sep="<br>"
+p1=glue('<b>Situation à surveiller : {padifval[3]} données <u>non validées et diffusées</u></b>')
+p2="=> peut venir du besoin de faire connaitre la donnée avant sa validation formelle"
+p3=glue("<b>Situation à surveiller : {padifval[2]} données <u>validées et non diffusées</u></b>")
+p4="=> peut venir d'une donnée en cours de non diffusée dans l'attente de fin de projet"
+p5=glue("<br>Situation normale : les {padifval[4]} données <u>validées et diffusées</u>")
+p6=glue("Situation normale : les {padifval[1]} données <u>non validées et non diffusées</u>(en cours de saisie)")
+text<-paste(p1,p2,p3,p4,p5,p6,sep=sep )
+HTML (text)
+})
+```
+
+
+
+### Diffusion et obsolescence des données
+```{r}
+renderTable({
+  dicodifobs()
+   }, rownames = TRUE)
+```
+
+
+### Points d'attention sur diffusion et obsolescence
+```{r}
+renderUI ({
+  padifobs<-PADIFOBS()
+  sep="<br>"
+  p1 =glue('<b>Situation à corriger : {padifobs[1]} données <u>obsolète et diffusées</u></b>')
+  p2 ="=> les données obsolètes ne devraient pas être diffusées, <u>à corriger</u>"
+  p3 =glue('<b>Situation à surveiller : {padifobs[3]} données  <u>non obsolète et non diffusées</u></b>')
+  p4 ="=> peut venir d'une donnée en cours de non diffusée dans l'attente de fin de projet"
+  p5 =glue('Situation normale : les {padifobs[2]} données <u>obsolètes et non diffusées</u>(donnée en fin de vie) ')
+  p6 =glue('Situation normale : les {padifobs[4]} données <u>non obsolètes et diffusées</u>')
+  text<-paste(p1,p2,p3,p4,p5,p6,sep=sep )
+  HTML (text)
+})
+```
+
+
+Row {data-height=200}
+-------------------------------------
+### Portée parmi données total 
+```{r}
+  renderPlot({
+  dico<-dataf()
+    x <- barplot(table(dico$portee), xaxt="n")
+    labs <- paste(names(table(dico$portee)),"\n", table(dico$portee))
+    text(cex=1, x=x, y= 100, labs, xpd=TRUE)
+})
+```
+
+### Validation parmi données total 
+```{r}
+  renderPlot({
+      dico<-dataf()
+x <- barplot(table(dico$status_val), xaxt="n")
+labs <- paste(names(table(dico$status_val)), "\n",table(dico$status_val))
+text(cex=1, x=x,  y=100, labs, xpd=TRUE)
+})
+```
+
+### Diffusion parmi données total 
+```{r}
+ renderPlot({
+      dico<-dataf()
+    x <- barplot(table(dico$statut_dif), xaxt="n")
+    labs <- paste(names(table(dico$statut_dif)), "\n",table(dico$statut_dif))
+    text(cex=1, x=x, y=100, labs, xpd=TRUE)
+})
+```
+
+### Obsolète parmi données total 
+```{r}
+ renderPlot({
+      dico<-dataf()
+  x <- barplot(table(dico$Obsolète), xaxt="n") 
+  labs <- paste(names(table(dico$Obsolète)), "\n",table(dico$Obsolète)) 
+  text(cex=1, x=x, y=100, labs, xpd=TRUE)
+ })
+```
+
+
+
+2- Généralités (DGV) {data-orientation=rows}
+=====================================  
+Row {data-height=100}
+-------------------------------------
+### Is the SCOPE
+```{r}
+renderValueBox({
+  scope<-input$selectedDMO
+  valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
+})
+
+```
+
+
+### NBRE DONNEES ALL
+```{r}
+renderValueBox({
+    dataset <- dataf()
+    nbrdata<-dim(dataset)[1] 
+  valueBox(nbrdata, caption = "Pour mémoire : Nbr Données total",color=bleu(4)[2], icon = "fa-database")
+})
+```
+
+
+### NBRE DONNEES GRPE Valide
+```{r}
+renderValueBox({
+    dataset <- datafgv()
+    nbrdatafiltre<-dim(dataset)[1] 
+    valueBox (HTML(paste("<b><u>",nbrdatafiltre,"</b></u>")) , caption = HTML("<b><u>Assiette pour cet écran : Données groupe valide</b></u>"), color=bleu(4)[3], icon = "fa-award")
+  })
+```
+
+
+### NBRE DONNEES GRPE Valide NO diffusée
+```{r}
+renderValueBox({
+    dataset <- datafgvnod()
+    nbrdatafiltrenod<-dim(dataset)[1] 
+    valueBox(nbrdatafiltrenod, caption = "Pour info :  Données groupe valide non OBSOLETE diffusée", color=bleu(4)[4], icon = "fa-signal")
+  })
+```
+
+
+Row {data-height=600}
+-------------------------------------
+### Nature de la donnée
+```{r}
+renderPlot({
+  dico_filtre<-datafgv()
+  dico_filtre$Nature <- ordered (dico_filtre$Nature, levels = c("Donnée métier", "Objet métier",  "Concept" ))
+  x <- barplot(table(dico_filtre$Nature), xaxt="n")
+  labs <- paste(names(table(dico_filtre$Nature)),"\n", table(dico_filtre$Nature))
+  text(cex=1, x=x, y= 100, labs, xpd=TRUE)
+}  
+)
+
+renderTable({
+  dico_filtre<-datafgv()
+  dico_filtre$Nature <- ordered (dico_filtre$Nature, levels = c("Donnée métier", "Objet métier",  "Concept" ))
+  head(table(dico_filtre$Nature),4) 
+   }, rownames = TRUE)
+```
+
+
+### Catégorie de donnée Prioritaire
+```{r}
+renderPlot({
+    cdcp_filtre<-dataCDCP()
+    #dico$`Catégorie de donnée à caractère prioritaire`[is.na(dico$`Catégorie de donnée à caractère prioritaire`)]<-"NA"
+    toto<-table(cdcp_filtre$CDCP)
+    titi<-toto[order(-toto)]
+    if (length(titi) > 1) 
+      {x<-barplot(titi [-1] ,  xaxt="n")
+      labs <- paste( titi [-1])
+      text(cex=1, x=x, y= 100, labs, xpd=TRUE) 
+      }
+    })
+
+
+renderTable({
+  cdcp_filtre<-dataCDCP()
+  toto<-table(cdcp_filtre$CDCP)
+  titi<-toto[order(-toto)]
+  head(titi,10) 
+   }, rownames = TRUE
+  )
+```
+
+### Catégorie de donnée Personnelle
+<!-- if pour gérer le cas ou  le il n'y a aucune CDCPerso -->
+```{r}
+renderPlot({
+  dico_filtre<-datafgv()
+    dico_filtre$`Catégorie de donnée à caractère personnel`[is.na(dico_filtre$`Catégorie de donnée à caractère personnel`)]<-"NA"
+    toto<-table(dico_filtre$`Catégorie de donnée à caractère personnel`)
+    titi<-toto[order(-toto)]
+    if (length(titi)>1) {
+    barplot(titi[-1] , cex.names=.5,las = 3) }
+})
+
+
+renderTable({
+  dico_filtre<-datafgv()
+    dico_filtre$`Catégorie de donnée à caractère personnel`[is.na(dico_filtre$`Catégorie de donnée à caractère personnel`)]<-"NA"
+    toto<-table(dico_filtre$`Catégorie de donnée à caractère personnel`)
+    titi<-toto[order(-toto)]
+  titi
+   }, rownames = TRUE
+  )
+
+```
+
+
+3-Confidentialité (DGV) {data-orientation=rows}
+=====================================  
+Row {data-height=100}
+-------------------------------------
+### Is the SCOPE
+```{r}
+renderValueBox({
+  scope<-input$selectedDMO
+  valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
+})
+
+```
+
+
+### NBRE DONNEES ALL
+```{r}
+renderValueBox({
+    dataset <- dataf()
+    nbrdata<-dim(dataset)[1] 
+  valueBox(nbrdata, caption = "Pour mémoire : Nbr Données total",color=bleu(4)[2], icon = "fa-database")
+})
+```
+
+
+### NBRE DONNEES GRPE Valide
+```{r}
+renderValueBox({
+    dataset <- datafgv()
+    nbrdatafiltre<-dim(dataset)[1] 
+    valueBox (HTML(paste("<b><u>",nbrdatafiltre,"</b></u>")) , caption = HTML("<b><u>Assiette pour cet écran : Données groupe valide</b></u>"), color=bleu(4)[3], icon = "fa-award")
+  })
+```
+
+
+### NBRE DONNEES GRPE Valide NO diffusée
+```{r}
+renderValueBox({
+    dataset <- datafgvnod()
+    nbrdatafiltrenod<-dim(dataset)[1] 
+    valueBox(nbrdatafiltrenod, caption = "Pour info :  Données groupe valide non OBSOLETE diffusée", color=bleu(4)[4], icon = "fa-signal")
+  })
+```
+
+
+
+Row {data-height=350}
+-------------------------------------
+
+### Confidentialité
+```{r}
+renderPlot({
+  dico_filtre<-datafgv()
+  barplot(table(dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage`) , cex.names=1) 
+})
+
+renderTable({
+  dico_filtre<-datafgv()
+    toto<-table(dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage`)
+    toto
+   }, rownames = TRUE
+  )
+
+```  
+
+
+### Nature Confidentialité en Français
+```{r}
+renderPlot ({
+  dico_filtre<-datafgv()
+  toto<-dico_filtre$`Nature de la confidentialité`[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3")]
+  titi<-toto[!is.na(toto)]
+  if (length(titi)>0 )
+  {histowc(titi, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Français) pour les C2/C3")}
+  # nb1 <<- sum(titi==1)
+  # nb_court<<-sum(titi<5 & titi>1)
+  # nb_ok<<- sum(titi>4 & titi<11)
+  # nb_long <<-sum(titi>10)
+  # isNA
+})
+
+```
+
+
+
+
+### Nature Confidentialité en Anglais
+```{r}
+renderPlot ({
+  dico_filtre<-datafgv()
+  toto<-dico_filtre$`Confidentiality nature`[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3")]
+  titi<-toto[!is.na(toto)]
+  if (length(titi)>0 )
+  {histowc(titi, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Anglais) pour les C2/C3")}
+})
+
+```   
+
+
+
+<!-- ### **Box plot** shows the relationship between categorical and numeric variables -->
+<!-- ```{r} -->
+
+<!-- renderPlotly({ -->
+<!--   plot_ly(data, -->
+<!--           x = ~data[[input$numeric_variable]], -->
+<!--           color = ~data[[input$categorical_variable]], -->
+<!--           colors = "Paired", -->
+<!--           type = "box") %>% -->
+<!--     layout(title = "", -->
+<!--            xaxis = list(title = "" , -->
+<!--                         zeroline = FALSE)) -->
+<!-- }) -->
+<!-- ``` -->
+
+<!-- Row {data-height=100} -->
+<!-- ------------------------------------- -->
+
+<!-- ### **Bar chart** shows the distribution of categorical veriable -->
+<!-- ```{r} -->
+
+<!-- renderPlotly({ -->
+<!--   data %>% -->
+<!--     count(var = data[[input$categorical_variable]], name = "count") %>% -->
+<!--     plot_ly( x = ~var, y = ~ count, type = "bar", marker = list(color = '#008ae6', -->
+<!--                                                                 line = list(color = '#008ae6', width = 2)), hoverinfo = "x+y") %>% -->
+<!--     add_text(text = ~paste0( " (",   scales::percent(count/sum(count)),")"),  -->
+<!--              textposition = "bottom",  -->
+<!--              textfont = list(size = 12, color = "white"),  -->
+<!--              showlegend = FALSE) %>% -->
+<!--     layout(xaxis = list(title = ""), yaxis = list(title = "")) -->
+
+<!-- }) -->
+<!-- ``` -->
+
+<!-- ### **Histogram** shows the distribution of numeric variable -->
+<!-- ```{r} -->
+
+<!-- renderPlotly({ -->
+<!--   plot_ly(x = data[[input$numeric_variable]], type = "histogram",  marker = list(color = "#008ae6", -->
+<!--                                                                                  line = list(color = "darkgray", -->
+<!--                                                                                              width = 1))) -->
+<!-- }) -->
+<!-- ``` -->
