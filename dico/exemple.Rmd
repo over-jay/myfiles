@@ -6,6 +6,24 @@ output:
 vertical_layout: fill
 runtime: shiny
 ---
+
+<!-- backlog 
+  (+doublons techniques)
+  # Evolution dans le temps (genre à J-90) 
+  # modèle orphelin (sans) rattachement à des concept du dico==> Extraction des modèle.... 
+  # données obsolète mais avec 
+          - des lien vers des modèles IT ou 
+          - des liens vers de modèles Métier ou 
+          - avec des concept enfant ou 
+          - avec des concept parents ou 
+          - avec des règle métier
+        pour information: avec processus métier  (conso / producteur)
+     * Par motif d'obsolesence
+  # les terme qui sont synonyme d'eux même 
+    # les synonnyme qui ont leur propre définition ... 
+ +++ liste des données posant problème
+ 
+-->
   
 ```{r setup, include=FALSE}
   
@@ -399,7 +417,7 @@ data <- reactive({
 })
 
 dataCDCP <-reactive({
-  dico_all_sdd<-data()
+  dico_all_sdd<-dataf()
   dfcdcp<-as.data.frame (cbind(dico_all_sdd$`Concept ADD` ,dico_all_sdd$`Identifiant technique`, dico_all_sdd$`Catégorie de donnée à caractère prioritaire`))
   colnames(dfcdcp)[1]<-"Concept ADD"
   colnames(dfcdcp)[2]<-"Identifiant technique"
