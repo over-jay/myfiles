@@ -1026,6 +1026,7 @@ renderUI ({
 4-Longueur texte FR (DGV) {data-orientation=rows}
 =====================================  
 Row {data-height=100}
+
 -------------------------------------
 ### Is the SCOPE
 ```{r}
@@ -1033,7 +1034,9 @@ renderValueBox({
   scope<-input$selectedDMO
   valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
 })
+
 ```
+
 
 ### NBRE DONNEES ALL
 ```{r}
@@ -1185,6 +1188,7 @@ renderValueBox({
   scope<-input$selectedDMO
   valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
 })
+
 ```
 
 
