@@ -5,7 +5,6 @@ output:
   orientation: columns
 vertical_layout: fill
 runtime: shiny
-css: styles.css
 ---
 
 <!-- backlog 
@@ -24,10 +23,24 @@ css: styles.css
     # les synonnyme qui ont leur propre définition ... 
  +++ liste des données posant problème
  
+ [6/27/2022 6:43 PM]  LEVISTRE Laurent ResgTpsGdo:  
+faut que tu me mettes un controle en place sur le nombre de règles de gestion au regard de la criticité d'une donnée
+plus la donnée est critique, quelque part plus tu devrais avoir un encadrement par de nombreuses règles de gestion
+ 
+[6/27/2022 6:49 PM]  
+Yes 
+compter le nombre de règle par niveau CM1/2/3 
+(et on doit en avoir plus en CM3)
+ 
+
+ 
+ 
 -->
   
 ```{r setup, include=FALSE}
-  
+
+
+library(ECharts2Shiny)
 library(flexdashboard)
 library(binovisualfields)
 library(shiny)
@@ -51,10 +64,8 @@ Sys.setenv(JAVA_HOME="C:/Program Files/Java/jre1.8.0_251/")
   library(readxl)
 library(glue)
 
- includeCSS("www/flexdashboard.css")
-
- # path<-"C:\\Users\\A311009\\OneDrive - GROUP DIGITAL WORKPLACE\\D_Drive_A311009\\GDO\\99-EXTRACT"
- # setwd(path)
+  path<-"C:\\Users\\A311009\\OneDrive - GROUP DIGITAL WORKPLACE\\D_Drive_A311009\\GDO\\99-EXTRACT"
+  setwd(path)
 
  options(shiny.maxRequestSize = 30*1024^2)
   
@@ -210,6 +221,8 @@ transcoservice<-transcoservice [-1,]
 colnames(transcoservice)[2]<-"SDD"
 transcoservice[dim(transcoservice)[1]+1,]<- c('*', 'All')
 DMO<-transcoservice[order(transcoservice$SDD),"SDD"]
+
+unique (DMO)
 
 colfunc <- colorRampPalette(c("#E6E6E6","#BCBCBC")) #gris
 #colfunc(6)[1]
@@ -386,22 +399,22 @@ data <- reactive({
                              "Privative Banque et financements à l'international" = "IBFS" ,   "Privative Banque de réseau France (SG)"=  "RBDF" )
   
   
-  dico$`Statut de validation`[is.na(dico$`Statut de validation`)]<-"NA"
+  dico$`Statut de validation`[is.na(dico$`Statut de validation`)]<-"N/A"
   #unique(dico$`Statut de validation`)
   #table(dico$status_val)
   dico$status_val <-recode_factor(dico$`Statut de validation`, 
                                   "Non validé"  = "No Valid", 
-                                  "NA"="NA",   
+                                  "N/A"="N/A",   
                                   "Validé par le data designer"  = "Valid DD", 
                                   "Validé par le data owner" = "Valid DO")
-  dico$`Statut de diffusion`[is.na(dico$`Statut de diffusion`)]<-"NA"
-  dico$statut_dif<- dico$`Statut de diffusion`
+  dico$`Statut de diffusion`[is.na(dico$`Statut de diffusion`)]<-"N/A"
+  dico$status_dif<- dico$`Statut de diffusion`
   
   
-  dico$Obsolète[is.na(dico$Obsolète)]<-"NA"
+  dico$Obsolète[is.na(dico$Obsolète)]<-"N/A"
   dico$Obsolète<-recode_factor(dico$Obsolète,
                                 "Oui"  = "Obsolète", 
-                                "NA"="NA",   
+                                "N/A"="N/A",   
                                 "Non" = "Non Obsolète")
   
   
@@ -416,7 +429,40 @@ data <- reactive({
   dico_all_sdd[dico_all_sdd$SDD == "RESG/TPS/GDO" & !is.na (dico_all_sdd$SDD) &  dico_all_sdd$`Nom Business Data Designer` == "TEMIM David",]$SDD <-  "RESG/TPS/GDO/PROT" 
   
   dico_all_sdd<<-dico_all_sdd
+  
+  # retirer les doublons de CM
+  cm_col=which (colnames(dico_all_sdd) == "Criticité métier")
+  # dfcmx<- as.data.frame (cbind(dico_all_sdd$`Concept ADD` ,dico_all_sdd$`Identifiant technique`, dico_all_sdd$`Criticité métier`))
+  # colnames(dfcmx)[1]<-"Concept ADD"
+  # colnames(dfcmx)[2]<-"Identifiant technique"
+  # colnames(dfcmx)[3]<-"CMX"
+  dico_nocm <- dico_all_sdd[,-cm_col]
+  dico_nocmunique <- sqldf("select distinct * from dico_nocm")
+  doublon<-sqldf("select A.`Identifiant technique`,  count(*) as nombre
+              from dico A
+              group by A.`Identifiant technique`
+              having nombre>1 order by A.`Identifiant technique`")
+  doublon_cm <- sqldf("select A.*,  B.`Criticité métier` as `Criticité métier`
+                      from   doublon A, dico B
+                      where A.`Identifiant technique` = B.`Identifiant technique` ")
+
+  dico_dedoubl<- sqldf("select distinct  A.*, max(B.`Criticité métier`) as `Criticité métier` from dico_nocm A, doublon_cm B
+                     where A.`Identifiant technique`   = B.`Identifiant technique`
+                     group by A.`Identifiant technique`       ")
+  dico_cmok <- sqldf("select  * from dico_all_sdd
+                where `Identifiant technique` not in (select B.`Identifiant technique` from doublon B)")
+  dico_cmok  <-cbind(dico_cmok [,-cm_col], dico_cmok [,cm_col]) # METTRE LE   CRITICIT2 M2TIER à la fin
+  lastcol = which (colnames(dico_cmok) == "dico_cmok[, cm_col]" )
+  colnames(dico_cmok)[lastcol] <-"Criticité métier"
+
+  dico_all<-rbind(dico_cmok, dico_dedoubl)
+
+  dico_all_sdd <-as.data.frame(dico_all)
+
   return(dico_all_sdd)
+  
+  
+  
 })
 
 dataCDCP <-reactive({
@@ -429,6 +475,8 @@ dataCDCP <-reactive({
   dfcdcp2$CDCP[is.na(dfcdcp2$CDCP)]<-"NA"
   return (dfcdcp2)
 })
+
+
 
 dataf <- reactive({
   dico_all<-data()
@@ -446,8 +494,21 @@ dataf <- reactive({
 
 datafgv <- reactive({
   dicof <- dataf()
-  dico_filtre<- sqldf("select * from dicof where Portée = 'Groupe' and `Statut de validation` <> 'NA' and  `Statut de validation` <> 'Non validé'") 
+  dico_filtre<- sqldf("select * from dicof where Portée = 'Groupe' and status_val <> 'N/A' and  status_val <> 'No Valid'") 
   return(dico_filtre)
+})
+
+
+
+dataCDCPfgv <-reactive({
+  dico_all_sdd<-datafgv()
+  dfcdcp<-as.data.frame (cbind(dico_all_sdd$`Concept ADD` ,dico_all_sdd$`Identifiant technique`, dico_all_sdd$`Catégorie de donnée à caractère prioritaire`))
+  colnames(dfcdcp)[1]<-"Concept ADD"
+  colnames(dfcdcp)[2]<-"Identifiant technique"
+  colnames(dfcdcp)[3]<-"CDCP"
+  dfcdcp2<-dfcdcp %>% separate_rows(CDCP,sep=';')
+  dfcdcp2$CDCP[is.na(dfcdcp2$CDCP)]<-"NA"
+  return (dfcdcp2)
 })
 
 datafgvno <- reactive({
@@ -458,14 +519,14 @@ datafgvno <- reactive({
 
 datafgvnod <- reactive({
   dicofgvno <- datafgvno()
-  dico_filtre<- sqldf("select * from dicofgvno where `Statut de diffusion` = 'Oui'") 
+  dico_filtre<- sqldf("select * from dicofgvno where status_dif = 'Oui'") 
   return(dico_filtre)
 })
 
 
 datafgvnond<- reactive({
   dicofgvno <- datafgvno()
-  dico_filtre<- sqldf("select * from dicofgvno where `Statut de diffusion` = 'Non'") 
+  dico_filtre<- sqldf("select * from dicofgvno where status_dif = 'Non'") 
   return(dico_filtre)
 })
 
@@ -478,23 +539,23 @@ datafgvob<- reactive({
 
 dicodifval<- reactive({ 
   dico <- dataf()
-  dico_difval <- as.data.frame.matrix(addmargins(table(dico$`Statut de diffusion`, dico$`Statut de validation`,useNA = "always")))
+  dico_difval <- as.data.frame.matrix(format(addmargins(table(dico$status_dif, dico$status_val)), digits =1))
   return (dico_difval)
 })
 
 dicodifobs<- reactive({
   dico<- dataf()
-  dico_difval<-as.data.frame.matrix(addmargins(table(dico$`Statut de diffusion`, dico$Obsolète,useNA = "always")))
+  dico_difval<-as.data.frame.matrix(format(addmargins(table(dico$status_dif, dico$Obsolète)), digits =1))
   return (dico_difval)
 })
   
   
   PADIFVAL <-reactive({ 
     dico <- dataf()
-    df<-table(dico$`Statut de diffusion`, dico$`Statut de validation`)
+    df<-table(dico$status_dif, dico$status_val)
     df2<-as.data.frame(df)
     filtre_dif <- (df2$Var1=="Oui")
-    filtre_val <- (df2$Var2 %in% c("Validé par le data designer", "Validé par le data owner"))
+    filtre_val <- (df2$Var2 %in% c("Valid DD", "Valid DO"))
     VD  <- sum(0, df2[ filtre_dif &  filtre_val ,]$Freq, na.rm = TRUE)
     NVD <- sum(0, df2[ filtre_dif & !filtre_val ,]$Freq, na.rm = TRUE)
     VND <- sum(0, df2[!filtre_dif &  filtre_val ,]$Freq, na.rm = TRUE)
@@ -504,7 +565,7 @@ dicodifobs<- reactive({
   
 PADIFOBS <-reactive({ 
     dico <- dataf()
-    df<- table(dico$`Statut de diffusion`, dico$Obsolète)
+    df<- table(dico$status_dif, dico$Obsolète) 
     OD<-df["Oui", "Obsolète" ] 
     OND<-df["Non", "Obsolète" ] 
     NOND<-df["Non", "Non Obsolète" ] 
@@ -561,7 +622,6 @@ Row {data-height=100}
 -------------------------------------
 ### scope
 ```{r}
-includeCSS("www/flexdashboard.css")
 renderValueBox({
   scope<-input$selectedDMO
   valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
@@ -707,8 +767,8 @@ text(cex=1, x=x,  y=100, labs, xpd=TRUE)
 ```{r}
  renderPlot({
       dico<-dataf()
-    x <- barplot(table(dico$statut_dif), xaxt="n")
-    labs <- paste(names(table(dico$statut_dif)), "\n",table(dico$statut_dif))
+    x <- barplot(table(dico$status_dif), xaxt="n")
+    labs <- paste(names(table(dico$status_dif)), "\n",table(dico$status_dif))
     text(cex=1, x=x, y=100, labs, xpd=TRUE)
 })
 ```
@@ -793,7 +853,7 @@ renderTable({
 ### Catégorie de donnée Prioritaire
 ```{r}
 renderPlot({
-    cdcp_filtre<-dataCDCP()
+    cdcp_filtre<-dataCDCPfgv() #abord filtrer DGV //// 
     #dico$`Catégorie de donnée à caractère prioritaire`[is.na(dico$`Catégorie de donnée à caractère prioritaire`)]<-"NA"
     toto<-table(cdcp_filtre$CDCP)
     titi<-toto[order(-toto)]
@@ -806,7 +866,7 @@ renderPlot({
 
 
 renderTable({
-  cdcp_filtre<-dataCDCP()
+  cdcp_filtre<-dataCDCPfgv() #abord filtrer DGV ////  
   toto<-table(cdcp_filtre$CDCP)
   titi<-toto[order(-toto)]
   head(titi,10) 
@@ -839,7 +899,7 @@ renderTable({
 ```
 
 
-3-Confidentialité (DGV) {data-orientation=rows}
+3-Confidentialité/Criticité (DGV) {data-orientation=rows}
 =====================================  
 Row {data-height=100}
 -------------------------------------
@@ -898,12 +958,13 @@ renderPlot({
 
 ### Nature Confidentialité en Français
 ```{r}
+
 renderPlot ({
   dico_filtre<-datafgv()
   toto<-dico_filtre$`Nature de la confidentialité`[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3")]
   titi<-toto[!is.na(toto)]
   if (length(titi)>0 )
-  {histowc(titi, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Français) pour les C2/C3")}
+  {histowc(toto, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Français) pour les C2/C3")}
   # nb1 <<- sum(titi==1)
   # nb_court<<-sum(titi<5 & titi>1)
   # nb_ok<<- sum(titi>4 & titi<11)
@@ -923,10 +984,62 @@ renderPlot ({
   toto<-dico_filtre$`Confidentiality nature`[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3")]
   titi<-toto[!is.na(toto)]
   if (length(titi)>0 )
-  {histowc(titi, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Anglais) pour les C2/C3")}
+  {histowc(toto, rm1= FALSE, title = "Nombre de mots de \n la nature de confidentialité (Anglais) pour les C2/C3")}
 })
 
 ```   
+
+
+### Criticité
+```{r}
+renderPlot ({
+  dico_filtre<-datafgv()
+  #toto<-dico_filtre$`Cricité métier`
+  dico_filtre$`Criticité métier` <- ordered (dico_filtre$`Criticité métier`, levels = c("CM0","CM1","CM2","CM3"))
+  dico_filtre$`Criticité métier`[is.na(dico_filtre$`Criticité métier`)]<-"N/A"
+  toto <- ordered (dico_filtre$`Criticité métier`, levels = c("CM0","CM1","CM2","CM3"))
+  barplot(table(toto) , cex.names=1) 
+  
+})
+
+```   
+
+
+### Criticité et règles métier FR/EN
+```{r}
+renderPlotly({
+    dico_filtre<- datafgv()
+    #compter les RM
+    toto<-dico_filtre
+  toto$RM_FR<-  str_count(toto$`Règles de gestion métier (Français)`, "\n")+1
+  toto$RM_FR[is.na(toto$`Règles de gestion métier (Français)`)]<-0
+  toto$RM_EN<-  str_count(toto$`Règles de gestion métier (Anglais)`, "\n")+1
+  toto$RM_EN[is.na(toto$`Règles de gestion métier (Anglais)`)]<-0
+  titi<-data.frame(toto$`Criticité métier`,  toto$RM_FR, toto$RM_EN)
+  colnames(titi) <- c('CM','RM_FR','RM_EN')
+ tata<-sqldf("select CM,RM_FR,RM_EN , count (*) as NBRE from titi group by CM,RM_FR,RM_EN"  )
+  longueur <- dim(tata)[1]
+  #plot(titiF$RM+rnorm(longueur),titiE$RM+rnorm(longueur), col=toto$`Criticité métier`, pch = 20, cex= 0.1)
+  #legend(30, 10, legend=levels(toto$`Criticité métier`),        col=c(1:4), pch =20, cex=1)
+pal <- c("red", "blue", "green")
+  plot_ly(tata, x = tata$RM_FR+rnorm(longueur)*0.2, y = tata$RM_EN+rnorm(longueur)*0.2,  type = 'scatter',
+       mode = "markers", color = tata$CM , size =tata$NBRE*2,  colors = pal, symbol = tata$CM, symbols = c('circle','x','0')) %>%
+    layout(shapes = list(list(
+    type = "line", 
+    x0 = 0, 
+    x1 = max(tata$RM_EN, tata$RM_FR), 
+    xref = "x",
+    y0 = 0, 
+    y1 = max(tata$RM_EN, tata$RM_FR),
+    yref = "y",
+    line = list(color = "blue")
+  )))
+    
+})
+```
+
+
+
 
 Row {data-height=350}
 -------------------------------------
@@ -944,10 +1057,15 @@ renderTable({
 
 ### Points d'attention sur Confidentialité en Français
 ```{r}
+sliderInput("range", "Tranche de  valeurs acceptables",
+                  min = 1, max = 500,
+                  value = c(20,50), width = "100%")
+
+
 renderUI ({
   dico_filtre<- datafgv()
   toto<-dico_filtre[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3"), ]$`Nature de la confidentialité`
-      isNA<-0 
+      #isNA<-0 
       nb1<-0
       nb_ok<-0
       nb_court<-0
@@ -955,24 +1073,26 @@ renderUI ({
 
     if (length(toto)>0)
     {
+      minlg<-input$range[1]
+      maxlg<-input$range[2]
       titi<-sapply(toto, wordcount, sep = " ")
       moy<- round(mean(titi, na.rm = T), 2)
-      maxi<<- round(max(titi, na.rm = T), 2)
-      mini<<- round(min(titi, na.rm = T), 2)
-      isNA <<- sum(is.na(toto))
+      maxi<- round(max(titi, na.rm = T), 2)
+      mini<- round(min(titi, na.rm = T), 2)
+      isNA <- sum(is.na(toto))
       nonNA <- sum(!is.na(toto))
       all <- isNA + nonNA
       titi<-titi[!is.na(titi) & !is.na(toto)]
       titi<-titi[(titi!=0)]
       nb1 <- sum(titi==1)
-      nb_court<-sum(titi<5 & titi>1)
-      nb_ok<- sum(titi>4 & titi<11)
-      nb_long <-sum(titi>10)
+      nb_court<-sum(titi<minlg & titi>1)
+      nb_ok<- sum( titi>minlg-1  & titi<maxlg+1 ) 
+      nb_long <-sum(titi>maxlg)
       }
       p1 = glue("<b>Situation à <u>corriger</u> :  aucun mot ({isNA} cas) ou un seul mot ({nb1} cas) dans la description</b>")
-      p2 = glue("Situation à surveiller :  {nb_court}  descriptions une peu courtes (entre 2 et 4 mots)")
-      p3 = glue("Situation à surveiller :  {nb_long}  descriptions une peu longues (plus de 10 mots)")
-      p4 = glue("Situation normale : {nb_ok} descriptions entre 5 et 10 mots pour la nature de confidentialité")
+      p2 = glue("Situation à surveiller :  {nb_court}  descriptions une peu courtes (entre 2 et {minlg} mots)")
+      p3 = glue("Situation à surveiller :  {nb_long}  descriptions une peu longues (plus de  {maxlg} mots)")
+      p4 = glue("Situation normale : {nb_ok} descriptions entre  {minlg} et  {maxlg} mots pour la nature de confidentialité")
       p5 = glue("(sur : {nb1+nb_ok+nb_court+nb_long} descriptions non vides au total)")
       p6 = glue("(grand total : {isNA+nb1+nb_ok+nb_court+nb_long})")
       sep="<br>"
@@ -984,6 +1104,7 @@ renderUI ({
 
 ### Points d'attention sur Confidentialité en Anglais
 ```{r}
+
 renderUI ({
   dico_filtre<- datafgv()
   toto<-dico_filtre[dico_filtre$`Exigence de confidentialité par défaut pouvant être modifiée selon l'usage` %in% c("C2", "C3"), ]$`Confidentiality nature`
@@ -995,6 +1116,8 @@ renderUI ({
 
     if (length(toto)>0)
     {
+      minlg<-input$range[1]
+      maxlg<-input$range[2]
       titi<-sapply(toto, wordcount, sep = " ")
       moy<- round(mean(titi, na.rm = T), 2)
       maxi<<- round(max(titi, na.rm = T), 2)
@@ -1005,14 +1128,14 @@ renderUI ({
       titi<-titi[!is.na(titi) & !is.na(toto)]
       titi<-titi[(titi!=0)]
       nb1 <- sum(titi==1)
-      nb_court<-sum(titi<5 & titi>1)
-      nb_ok<- sum(titi>4 & titi<11)
-      nb_long <-sum(titi>10)
+      nb_court<-sum(titi<minlg & titi>1)
+      nb_ok<- sum( titi>minlg-1  & titi<maxlg+1 ) 
+      nb_long <-sum(titi>maxlg)
       }
       p1 = glue("<b>Situation à <u>corriger</u> :  aucun mot ({isNA} cas) ou un seul mot ({nb1} cas) dans la description</b>")
-      p2 = glue("Situation à surveiller :  {nb_court}  descriptions une peu courtes (entre 2 et 4 mots)")
-      p3 = glue("Situation à surveiller :  {nb_long}  descriptions une peu longues (plus de 10 mots)")
-      p4 = glue("Situation normale : {nb_ok} descriptions entre 5 et 10 mots pour la nature de confidentialité")
+      p2 = glue("Situation à surveiller :  {nb_court}  descriptions une peu courtes (entre 2 et {minlg} mots)")
+      p3 = glue("Situation à surveiller :  {nb_long}  descriptions une peu longues (plus de  {maxlg} mots)")
+      p4 = glue("Situation normale : {nb_ok} descriptions entre  {minlg} et  {maxlg} mots pour la nature de confidentialité")
       p5 = glue("(sur : {nb1+nb_ok+nb_court+nb_long} descriptions non vides au total)")
       p6 = glue("(grand total : {isNA+nb1+nb_ok+nb_court+nb_long})")
       sep="<br>"
@@ -1021,11 +1144,37 @@ renderUI ({
 })
 ```
 
+### Criticité et règles métier FR
+```{r}
+renderPlot({
+    dico_filtre<- datafgv()
+    #compter les RM
+    toto<-dico_filtre
+  toto$RM_FR<-  str_count(toto$`Règles de gestion métier (Français)`, "\n")+1
+  toto$RM_FR[is.na(toto$`Règles de gestion métier (Français)`)]<-0
+       p <- ggplot(toto, aes(x=`Criticité métier`, y=RM_FR  )) +   geom_boxplot()
+       p
+  })
+```
+
+### Criticité et règles métier EN
+```{r}
+renderPlot({
+    dico_filtre<- datafgv()
+    #compter les RM
+    toto<-dico_filtre
+    toto$RM_EN<-  str_count(toto$`Règles de gestion métier (Anglais)`, "\n")+1
+    toto$RM_EN[is.na(toto$`Règles de gestion métier (Anglais)`)]<-0
+     p <- ggplot(toto, aes(x=`Criticité métier`, y=RM_EN  )) +   geom_boxplot()
+     p
+  })
+```
 
 
 4-Longueur texte FR (DGV) {data-orientation=rows}
 =====================================  
 Row {data-height=100}
+-------------------------------------
 -------------------------------------
 ### Is the SCOPE
 ```{r}
@@ -1033,7 +1182,9 @@ renderValueBox({
   scope<-input$selectedDMO
   valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
 })
+
 ```
+
 
 ### NBRE DONNEES ALL
 ```{r}
@@ -1088,7 +1239,17 @@ renderPlot ({
 
 ### Points d'attention sur le terme en Français
 ```{r}
+sliderInput("rangeterme", "Tranche de termes acceptable FR",
+                  min = 1, max = 200,
+                  value = c(10,30), width = "100%")
+sliderInput("rangelt", "Nb minimum de lettres du terme FR ",
+                  min = 1, max = 50,
+                  value = c(4), width = "100%")
+
 renderUI ({
+        mintr<-input$rangeterme[1]
+      maxtr<-input$rangeterme[2]
+      minlt <- input$rangelt[1]
   dico_filtre<- datafgv()
 toto<-dico_filtre$`Terme (Français)`
  titi<-sapply(toto, wordcount, sep = " ")
@@ -1101,19 +1262,22 @@ toto<-dico_filtre$`Terme (Français)`
   titi<-titi[!is.na(titi)]
   titi<-titi[(titi!=0)]
   nb1 <- sum(titi==1)
-  nb_ok<- sum(titi>0 & titi<4)
-  nb_long <-sum(titi>3)
+  nb_ok<- sum(titi>mintr-1 & titi<maxtr+1)
+  nb_long <-sum(titi>maxtr)
+  nb_court <-sum(titi<mintr)
+  toto[is.na(toto)]<-"" # gerer l'absence de terme 
   titi <- nchar(toto)
-  lt_court <- sum(titi<4)
+  lt_court <- sum(titi<minlt)
 
   #### Pour les termes en français 
   p1 = glue("Situation à <u>corriger</u> :  aucun mot pour le terme ({isNA} cas)")
-  p2 = glue("Situation à surveiller :  {nb_long} cas de  termes une peu longs (plus de 4 mots)")
-  p3 = glue("Situation normale : {nb_ok} cas de termes entre 1 et 3 mots")
-  p4 = glue("A surveiller également :  {lt_court} termes avec moins de 4 lettres")
+  p2 = glue("Situation à surveiller :  {nb_long} cas de  termes une peu longs (plus de {maxtr} mots)")
+  p2bis = glue("Situation à surveiller :  {nb_court} cas de  termes une peu court (moins de {mintr} mots)")
+  p3 = glue("Situation normale : {nb_ok} cas de termes entre {mintr} et {maxtr}  mots")
+  p4 = glue("A surveiller également :  {lt_court} termes avec moins de {minlt}  lettres")
   p5 = glue("(sur :{nb_ok+nb_long} descriptions non vides au total)")
   sep="<br>"
-  text<-paste(p1,p2,p3,p4,p5,sep=sep )
+  text<-paste(p1,p2, p2bis,p3,p4,p5,sep=sep )
   HTML (text)
 })
 ```   
@@ -1141,7 +1305,18 @@ histolt(toto)
 
 ### Points d'attention sur la définition en Français
 ```{r}
+sliderInput("rangedf", "Tranche de mot de la définition acceptable FR",
+                  min = 1, max = 500,
+                  value = c(10,30), width = "100%")
+sliderInput("rangedflt", "Nb minimum de lettres de la definition FR ",
+                  min = 1, max = 100,
+                  value = c(4), width = "100%")
+
+
 renderUI ({
+          mindf<-input$rangedf[1]
+      maxdf<-input$rangedf[2]
+      mindflt <- input$rangedflt[1]
   dico_filtre<- datafgv()
 toto<-dico_filtre$`Définition (Français)`
  titi<-sapply(toto, wordcount, sep = " ")
@@ -1154,19 +1329,20 @@ toto<-dico_filtre$`Définition (Français)`
   titi<-titi[!is.na(titi)]
   titi<-titi[(titi!=0)]
   nb1 <- sum(titi==1)
-  nb_ok<- sum(titi>5 & titi<31)
-  nb_court<- sum(titi<6)
-  nb_long <-sum(titi>30)
+  nb_ok<- sum(titi>mindf-1 & titi<maxdf+1)
+  nb_court<- sum(titi<mindf)
+  nb_long <-sum(titi>maxdf)
+  toto[is.na(toto)]<-"" # gerer l'absence de terme 
 titi <- nchar(toto)
- lt_court <- sum(titi<10)
+ lt_court <- sum(titi<mindflt)
   
 #### Pour les définitions en français 
   p1 = glue(" Situation à <u>corriger</u> :  aucun mot pour la définition ({isNA} cas)")
-  p2 = glue("Situation à surveiller :  {nb_long} cas de definitions une peu longues (plus de 30 mots)")
-  p3 = glue("Situation à surveiller :  {nb_court} cas de  définitions une peu courtes (moins de 6 mots)")
-  p4 = glue("Situation normale : {nb_ok} définitions entre 6 et 30 mots")
-  p5 = glue("A surveiller également : les {lt_court} définitions avec moins de 10 lettres")
-  p6= glue("(sur : {nb_ok+nb_long+nb_court} descriptions non vides au total)")
+  p2 = glue("Situation à surveiller :  {nb_long} cas de definitions une peu longues (plus de {maxdf} mots)")
+  p3 = glue("Situation à surveiller :  {nb_court} cas de  définitions une peu courtes (moins de {mindf} mots)")
+  p4 = glue("Situation normale : {nb_ok} définitions entre {mindf} et {maxdf} mots")
+  p5 = glue("A surveiller également : les {lt_court} définitions avec moins de {mindflt} lettres")
+  p6= glue("(sur : {nb_ok+nb_long+nb_court} définitions non vides au total)")
   sep="<br>"
   text<-paste(p1,p2,p3,p4,p5,p6,sep=sep )
   HTML (text)
@@ -1185,6 +1361,7 @@ renderValueBox({
   scope<-input$selectedDMO
   valueBox(scope,caption = "SCOPE", color=bleu(8)[1], icon = "fa-glasses")
 })
+
 ```
 
 
@@ -1241,7 +1418,18 @@ renderPlot ({
 
 ### Points d'attention sur le terme en Anglais
 ```{r}
+
+sliderInput("rangetermeEN", "Tranche de termes acceptable EN",
+                  min = 1, max = 200,
+                  value = c(10,30), width = "100%")
+sliderInput("rangeltEN", "Nb minimum de lettres du terme EN",
+                  min = 1, max = 50,
+                  value = c(4), width = "100%")
+
 renderUI ({
+        mintr<-input$rangetermeEN[1]
+      maxtr<-input$rangetermeEN[2]
+      minlt <- input$rangeltEN[1]
   dico_filtre<- datafgv()
 toto<-dico_filtre$`Terme (Anglais)`
  titi<-sapply(toto, wordcount, sep = " ")
@@ -1254,19 +1442,22 @@ toto<-dico_filtre$`Terme (Anglais)`
   titi<-titi[!is.na(titi)]
   titi<-titi[(titi!=0)]
   nb1 <- sum(titi==1)
-  nb_ok<- sum(titi>0 & titi<4)
-  nb_long <-sum(titi>3)
+  nb_ok<- sum(titi>mintr-1 & titi<maxtr+1)
+  nb_long <-sum(titi>maxtr)
+  nb_court <-sum(titi<mintr)
+  toto[is.na(toto)]<-"" # gerer l'absence de terme 
   titi <- nchar(toto)
-  lt_court <- sum(titi<4)
+  lt_court <- sum(titi<minlt)
 
   #### Pour les termes en français 
   p1 = glue("Situation à <u>corriger</u> :  aucun mot pour le terme ({isNA} cas)")
-  p2 = glue("Situation à surveiller :  {nb_long} cas de  termes une peu longs (plus de 4 mots)")
-  p3 = glue("Situation normale : {nb_ok} cas de termes entre 1 et 3 mots")
-  p4 = glue("A surveiller également :  {lt_court} termes avec moins de 4 lettres")
+  p2 = glue("Situation à surveiller :  {nb_long} cas de  termes une peu longs (plus de {maxtr} mots)")
+  p2bis = glue("Situation à surveiller :  {nb_court} cas de  termes une peu court (moins de {mintr} mots)")
+  p3 = glue("Situation normale : {nb_ok} cas de termes entre {mintr} et {maxtr}  mots")
+  p4 = glue("A surveiller également :  {lt_court} termes avec moins de {minlt}  lettres")
   p5 = glue("(sur :{nb_ok+nb_long} descriptions non vides au total)")
   sep="<br>"
-  text<-paste(p1,p2,p3,p4,p5,sep=sep )
+  text<-paste(p1,p2, p2bis,p3,p4,p5,sep=sep )
   HTML (text)
 })
 ```   
@@ -1283,7 +1474,7 @@ histowc(toto, title = "Nombre de mots dans la définition en Anglais")
 })
 ```
 
-### Nombre de lettres DEFINITION Français
+### Nombre de lettres DEFINITION Anglais
 ```{r}
 renderPlot ({
     dico_filtre<-datafgv()
@@ -1294,8 +1485,20 @@ histolt(toto)
 
 ### Points d'attention sur la définition en Anglais
 ```{r}
+
+sliderInput("rangedfEN", "Tranche de mot de la définition acceptable EN",
+                  min = 1, max = 500,
+                  value = c(10,30), width = "100%")
+sliderInput("rangedfltEN", "Nb minimum de lettres de la definition EN",
+                  min = 1, max = 100,
+                  value = c(4), width = "100%")
+
+
 renderUI ({
-  dico_filtre<- datafgv()
+          mindf<-input$rangedfEN[1]
+      maxdf<-input$rangedfEN[2]
+      mindflt <- input$rangedfltEN[1]
+      dico_filtre<- datafgv()
 toto<-dico_filtre$`Définition (Anglais)`
  titi<-sapply(toto, wordcount, sep = " ")
  moy<- round(mean(titi, na.rm = T), 2)
@@ -1307,19 +1510,20 @@ toto<-dico_filtre$`Définition (Anglais)`
   titi<-titi[!is.na(titi)]
   titi<-titi[(titi!=0)]
   nb1 <- sum(titi==1)
-  nb_ok<- sum(titi>5 & titi<31)
-  nb_court<- sum(titi<6)
-  nb_long <-sum(titi>30)
-titi <- nchar(toto)
- lt_court <- sum(titi<10)
+  nb_ok<- sum(titi>mindf-1 & titi<maxdf+1)
+  nb_court<- sum(titi<mindf)
+  nb_long <-sum(titi>maxdf)
+toto[is.na(toto)]<-"" # gerer l'absence de terme 
+  titi <- nchar(toto)
+ lt_court <- sum(titi<mindflt)
   
-#### Pour les définitions en Anglais 
+#### Pour les définitions en français 
   p1 = glue(" Situation à <u>corriger</u> :  aucun mot pour la définition ({isNA} cas)")
-  p2 = glue("Situation à surveiller :  {nb_long} cas de definitions une peu longues (plus de 30 mots)")
-  p3 = glue("Situation à surveiller :  {nb_court} cas de  définitions une peu courtes (moins de 6 mots)")
-  p4 = glue("Situation normale : {nb_ok} définitions entre 6 et 30 mots")
-  p5 = glue("A surveiller également : les {lt_court} définitions avec moins de 10 lettres")
-  p6= glue("(sur : {nb_ok+nb_long+nb_court} descriptions non vides au total)")
+  p2 = glue("Situation à surveiller :  {nb_long} cas de definitions une peu longues (plus de {maxdf} mots)")
+  p3 = glue("Situation à surveiller :  {nb_court} cas de  définitions une peu courtes (moins de {mindf} mots)")
+  p4 = glue("Situation normale : {nb_ok} définitions entre {mindf} et {maxdf} mots")
+  p5 = glue("A surveiller également : les {lt_court} définitions avec moins de {mindflt} lettres")
+  p6= glue("(sur : {nb_ok+nb_long+nb_court} définitions non vides au total)")
   sep="<br>"
   text<-paste(p1,p2,p3,p4,p5,p6,sep=sep )
   HTML (text)
@@ -1436,7 +1640,7 @@ geom_abline(intercept = 0, slope = 1, color="red", size = 0.5)+
 })
 ```
 
-### Points d'attention
+### Points d'attention
 ####  LISTES DE VALEURS (Français/Anglais)
 ```{r}
 renderUI ({
@@ -2260,18 +2464,26 @@ Une donnée est considérée comme not-ok dès qu'un des champs obligatoires n'e
 
 ### 14. Compl. % de moyen
 ```{r}
- renderValueBox({ 
+ # renderValueBox({ 
+ #   x<-moyenne()
+ #   if (x==100) {col <- "#DBFCB9"}
+ #   if (x<100)  {col <- "#EBF6B9"}
+ #   if (x<75)   {col <- "#FCF0B9"}
+ #   if (x<50)   {col <- "#FCCCB9"}
+ #   if (x<25)   {col <- "#D2D2D2"}
+ # value = paste( round(x,2) ,"%" ) 
+ # text =  "est la moyenne des taux de complétude"
+ # caption = HTML(paste ("<p style = color:black;'><b>", text ,"</b></p>" ))
+ # valueBox(value=value,caption =caption , color=col)
+ #     })
+
+renderGauge({
    x<-moyenne()
-   if (x==100) {col <- "#DBFCB9"}
-   if (x<100)  {col <- "#EBF6B9"}
-   if (x<75)   {col <- "#FCF0B9"}
-   if (x<50)   {col <- "#FCCCB9"}
-   if (x<25)   {col <- "#D2D2D2"}
- value = paste( round(x,2) ,"%" ) 
- text =  "est la moyenne des taux de complétude"
- caption = HTML(paste ("<p style = color:black;'><b>", text ,"</b></p>" ))
- valueBox(value=value,caption =caption , color=col)
-     })
+  gauge(x,min=0, max=100,
+        sectors = gaugeSectors(success = c(98, 100), 
+                                 warning = c(50, 98),
+                                 danger = c(0, 50)))
+  })
 ```
 
 
